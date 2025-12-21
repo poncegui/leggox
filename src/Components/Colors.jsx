@@ -5,65 +5,48 @@ const ColorsSection = ({ colors, typ }) => {
   return (
     <ColorsContainer>
       <ColorsTitle>
-        <h2>/.Trabajamos para ayudarte a darle personalidad a tu negocio.</h2>
-        <div class="elemento-con-texto">
-        </div>
+        <h2>/. ACT I — ONLY 7</h2>
+        <p className="subtitle">Stamped and numbered · 1/7</p>
+        <div className="elemento-con-texto"></div>
       </ColorsTitle>
       <ColorsText>
         <div className="rgba">
-          <p className="rgba-text" aria-label="color blanco">
-            #ffffff
-          </p>
-          <p className="colorA">{colors}</p>
+          <p className="rgba-text">#F5F5F5</p>
+          <p className="colorA">no 1/.7</p>
         </div>
         <div className="rgba">
-          <p className="rgba-text">#C0C0C0</p>
-          <p className="colorB">{colors}</p>
+          <p className="rgba-text">#CCCCCC</p>
+          <p className="colorB">no 2/.7</p>
         </div>
         <div className="rgba">
-          <p className="rgba-text">#808080</p>
-          <p className="colorC">{colors}</p>
+          <p className="rgba-text">#999999</p>
+          <p className="colorC">no 3/.7</p>
         </div>
         <div className="rgba">
-          <p className="rgba-text">#404040</p>
-          <p className="colorD">{colors}</p>
+          <p className="rgba-text">#666666</p>
+          <p className="colorD">no 4/.7</p>
+        </div>
+        <div className="rgba">
+          <p className="rgba-text">#444444</p>
+          <p className="colorE">no 5/.7</p>
+        </div>
+        <div className="rgba">
+          <p className="rgba-text">#222222</p>
+          <p className="colorF">no 6/.7</p>
         </div>
         <div className="rgba">
           <p className="rgba-text">#000000</p>
-          <p className="colorE">{colors}</p>
+          <p className="colorG">no 7/.7</p>
         </div>
-        <div class="ActoContainerBlue">Act I.</div>
+        <div className="ActoContainerBlue">Act I.</div>
       </ColorsText>
-      {/* 
-      <ColorsText>
-        <div className="rgba">
-          <p className="rgba-text">font-family: 'Dancing Script';</p>
-          <p className="typA">{typ}</p>
-        </div>
-        <div className="rgba">
-          <p className="rgba-text">font-family: 'Roboto';</p>
-          <p className="typB">{typ}</p>
-        </div>
-        <div className="rgba">
-          <p className="rgba-text">font-family: "APERCU";</p>
-          <p className="typC">{typ}</p>
-        </div>
-        <div className="rgba">
-          <p className="rgba-text">font-family: 'Montserrat';</p>
-          <p className="typD">{typ}</p>
-        </div>
-        <div className="rgba">
-          <p className="rgba-text">font-family: 'Quicksand';</p>
-          <p className="typE">{typ}</p>
-        </div>
-      </ColorsText> */}
     </ColorsContainer>
   );
 };
 export default ColorsSection;
 
 const ColorsContainer = styled.section`
-  margin: 5% auto;
+  margin: 0;
   width: 100%;
   height: 100vh;
   display: flex;
@@ -72,6 +55,18 @@ const ColorsContainer = styled.section`
   justify-content: center;
   flex-direction: row-reverse;
   gap: 7rem;
+
+  @media (max-width: 1024px) {
+    gap: 3rem;
+    height: auto;
+    min-height: 100vh;
+    padding: 3rem 1rem;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 2rem;
+  }
 
   @media (max-width: 440px) {
     display: flex;
@@ -93,12 +88,47 @@ const ColorsTitle = styled.div`
     font-family: "APERCU";
     color: #f9efe4;
     padding: 3% 5%;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    font-family: "APERCU";
+    color: #f9efe4;
+    padding: 0 5%;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 1024px) {
+    h2 {
+      font-size: 60px;
+    }
+    .subtitle {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    text-align: center;
+    h2 {
+      font-size: 50px;
+      padding: 2% 3%;
+    }
+    .subtitle {
+      font-size: 15px;
+      padding: 0 3%;
+    }
   }
 
   @media (max-width: 440px) {
     h2 {
       font-size: 40px;
       white-space: wrap;
+    }
+    .subtitle {
+      font-size: 14px;
     }
   }
 `;
@@ -119,22 +149,37 @@ const ColorsText = styled.div`
 
   p {
     font-family: "APERCU";
-    font-size: 60px;
+    font-size: 42px;
+    text-indent: 1rem;
   }
+
+  @media (max-width: 1024px) {
+    width: 40%;
+    p {
+      font-size: 38px;
+    }
+  }
+
   @media (max-width: 860px) {
     p {
-      font-size: 70px;
+      font-size: 48px;
     }
+  }
+
+  @media (max-width: 768px) {
+    width: 90%;
+    padding: 2rem 1rem;
   }
 
   @media (max-width: 440px) {
     flex-direction: column;
+    width: 100%;
     p {
-      font-size: 50px;
+      font-size: 40px;
     }
   }
   .colorA {
-    color: RGBA(255, 255, 255, 1);
+    color: #e8e8e8;
     font-family: "APERCU";
   }
   .rgba-text {
@@ -143,22 +188,30 @@ const ColorsText = styled.div`
   }
   .rgba {
     text-align: start;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
   .colorB {
-    color: RGBA(192, 192, 192, 1);
+    color: #cccccc;
     font-family: "APERCU";
   }
   .colorC {
-    color: RGBA(128, 128, 128, 1);
+    color: #999999;
     font-family: "APERCU";
   }
   .colorD {
-    color: RGBA(64, 64, 64, 1);
+    color: #666666;
     font-family: "APERCU";
   }
   .colorE {
-    color: RGBA(0, 0, 0, 1);
+    color: #444444;
+    font-family: "APERCU";
+  }
+  .colorF {
+    color: #222222;
+    font-family: "APERCU";
+  }
+  .colorG {
+    color: #000000;
     font-family: "APERCU";
   }
   .typA {

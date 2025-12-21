@@ -14,36 +14,35 @@ const HeaderSection = () => {
     <HeaderContainer>
       <HeaderTitle>
         <h1>/.LOLA GUN STUDIO</h1>
-        <div class="elemento-con-texto">
-        </div>
+        <div className="elemento-con-texto"></div>
       </HeaderTitle>
       <MarginBottom margin="1rem" />
       <TextHeaderContainers>
-        <h2>DISEÑO WEB.</h2>
+        <h2>UNIQUE DESIGN.</h2>
       </TextHeaderContainers>
       <MarginBottom margin="0.5rem" />
       <TextHeaderContainers>
-        <h2>DISEÑO GRÁFICO.</h2>
+        <h2>UNIQUE DESIGN.</h2>
       </TextHeaderContainers>
       <MarginBottom margin="0.5rem" />
       <TextHeaderContainers>
-        <h2>MARKETING DIGITAL.</h2>
+        <h2>UNIQUE DESIGN.</h2>
       </TextHeaderContainers>
       <ServicesTextContainer>
         <WebDesignContainer />
         <MarginBottom margin="0.7rem" />
-        <GraphicDesign />
+        {/* <GraphicDesign />
         <GraphicDesign />
         <GraphicDesign />
         <MarginBottom margin="0.7rem" />
         <MarketingDigital />
         <MarketingDigital />
-        <MarketingDigital />
+        <MarketingDigital /> */}
         <MarginBottom margin="0.7rem" />
       </ServicesTextContainer>
       <MarginBottom margin="1rem" />
-      <button class="boton">
-        <div class="equis">+</div>
+      <button className="boton">
+        <div className="equis">+</div>
       </button>
     </HeaderContainer>
   );
@@ -52,9 +51,12 @@ const HeaderSection = () => {
 export default HeaderSection;
 
 const HeaderContainer = styled.section`
-  margin-bottom: clamp(30px, 6vw, 100px);
-  padding-top: 50px;
-  padding-bottom: clamp(30px, 6vw, 100px);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 5%;
+  margin: 0;
   background: var(--ch-bg, transparent);
 
   &:hover h2 {
@@ -72,16 +74,16 @@ const HeaderContainer = styled.section`
     position: absolute;
     width: 100%;
     height: 2px;
-    background-color: lightblue; /* Color de la línea */
+    background-color: lightblue;
     top: 50%;
-    transform: scaleX(0); /* Inicialmente no visible */
+    transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.3s ease-out;
   }
 
   h2:hover::before {
     transform-origin: left;
-    transform: scaleX(1); /* Se expande de izquierda a derecha al hacer hover */
+    transform: scaleX(1);
   }
 
   .boton {
@@ -94,7 +96,6 @@ const HeaderContainer = styled.section`
     cursor: pointer;
   }
 
-  /* Estilos para la "X" (elemento interno) */
   .equis {
     position: absolute;
     top: 50%;
@@ -115,6 +116,18 @@ const HeaderTitle = styled.div`
   h1 {
     font-size: 120px;
     font-family: "APERCU";
+  }
+
+  @media (max-width: 1024px) {
+    h1 {
+      font-size: 90px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 70px;
+    }
   }
 
   @media (max-width: 440px) {

@@ -5,20 +5,19 @@ import styled from "styled-components";
 const VideoMadrid = () => {
   return (
     <>
-    <HeaderTitle>
-    <h2>/.Video Experience</h2>
-    <div class="elemento-con-texto">
-        </div>
-  </HeaderTitle>
-    <VideoMadridContainer>
-      <video className="video" src={coverVideo} autoPlay loop muted />
-      <TextContainer>
-        {/* <h3></h3>
+      <HeaderTitle>
+        <h2>/.Video Experience</h2>
+        <div className="elemento-con-texto"></div>
+      </HeaderTitle>
+      <VideoMadridContainer>
+        <video className="video" src={coverVideo} autoPlay loop muted />
+        <TextContainer>
+          {/* <h3></h3>
         <p>
 
         </p> */}
-      </TextContainer>
-    </VideoMadridContainer>
+        </TextContainer>
+      </VideoMadridContainer>
     </>
   );
 };
@@ -59,16 +58,32 @@ const VideoMadridContainer = styled.div`
 `;
 
 const HeaderTitle = styled.div`
-margin-left: 5%;
-margin-top:15%;
+  margin-left: 5%;
+  margin-top: 15%;
   h2 {
     font-size: 80px;
     font-family: "APERCU";
   }
 
-  @media (max-width: 440px) {
-    h1 {
+  @media (max-width: 1024px) {
+    margin-top: 10%;
+    h2 {
       font-size: 60px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    margin-left: 3%;
+    margin-top: 8%;
+    h2 {
+      font-size: 50px;
+    }
+  }
+
+  @media (max-width: 440px) {
+    margin-left: 5%;
+    h2 {
+      font-size: 40px;
       white-space: wrap;
     }
   }
@@ -97,6 +112,16 @@ const TextContainer = styled.div`
     font-weight: 100;
   }
 
+  @media (max-width: 1024px) {
+    width: 60%;
+    h3 {
+      font-size: 2.5rem;
+    }
+    p {
+      font-size: 1.3rem;
+    }
+  }
+
   @media (max-width: 960px) {
     h3 {
       font-size: 70px;
@@ -108,6 +133,12 @@ const TextContainer = styled.div`
       width: 85%;
     }
   }
+
+  @media (max-width: 768px) {
+    width: 80%;
+    margin-right: 20px;
+  }
+
   @media (max-width: 440px) {
     align-items: start;
     justify-content: end;
