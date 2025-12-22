@@ -16,41 +16,46 @@ const COLORS = {
   card: 'rgba(255,255,255,0.5)',
 };
 
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+
+function editionLabel(index) {
+  return `${ROMAN[index]}/VII`;
+}
+
 const FORMATS = [
   {
     id: 'TABULA',
     title: 'TABULA',
     subtitle: 'Acrylic wall piece',
     img: '/img/tabula.jpg',
-    edition: '1/7',
+    edition: editionLabel(0),
   },
   {
     id: 'MENSUS_OVALIS',
     title: 'MENSUS OVALIS',
     subtitle: 'Oval table · wood or metal legs',
     img: '/img/mensus-ovalis.jpg',
-    edition: '2/7',
+    edition: editionLabel(1),
   },
   {
     id: 'FIGURA_SACRA',
     title: 'FIGURA SACRA',
     subtitle: 'Acrylic figure · glitter',
     img: '/img/figura-sacra.jpg',
-    edition: '3/7',
+    edition: editionLabel(2),
   },
   {
     id: 'MENSUS_ORBIS',
     title: 'MENSUS ORBIS',
     subtitle: 'Round table · Ø35 cm',
     img: '/img/mensus-orbis.jpg',
-    edition: '4/7',
+    edition: editionLabel(3),
   },
 ];
 
 export default function GalleryFormats() {
   return (
     <section
-      role="region"
       aria-labelledby="gallery-formats-title"
       style={{
         backgroundColor: COLORS.bg,

@@ -1,143 +1,131 @@
-import {
-  GraphicDesign,
-  MarketingDigital,
-  WebDesignContainer,
-} from "./Paragraphs";
-import { MarginBottom, TextHeaderContainers } from "../../globalStyles";
+import './HeaderSection.css';
 
-import ApercuFont from "../../Assets/Fonts/Apercu/Apercu-Regular.otf";
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import { TextHeaderContainers } from '../../globalStyles';
+import { WebDesignContainer } from './Paragraphs';
 
 const HeaderSection = () => {
+  const [windowWidth, setWindowWidth] = React.useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isSmall = windowWidth <= 440;
+  const isMobile = windowWidth <= 768;
+  const isTablet = windowWidth <= 1024;
+
+  const titleFontSize = isSmall ? 60 : isMobile ? 70 : isTablet ? 90 : 120;
+
   return (
-    <HeaderContainer>
-      <HeaderTitle>
-        <h1>/.LOLA GUN STUDIO</h1>
-        <div className="elemento-con-texto"></div>
-      </HeaderTitle>
-      <MarginBottom margin="1rem" />
+    <header style={styles.container} role="banner">
+      <div style={styles.titleWrapper}>
+        <h1
+          style={{
+            ...styles.title,
+            fontSize: `${titleFontSize}px`,
+          }}
+        >
+          /.LOLA GUN STUDIO
+        </h1>
+        <div className="elemento-con-texto" aria-hidden="true"></div>
+      </div>
+
+      <div style={styles.marginBottom} />
+
+      <TextHeaderContainers>
+        <h2>UNUM.</h2>
+      </TextHeaderContainers>
+
+      <div style={styles.marginBottomSmall} />
+
       <TextHeaderContainers>
         <h2>UNIQUE DESIGN.</h2>
       </TextHeaderContainers>
-      <MarginBottom margin="0.5rem" />
-      <TextHeaderContainers>
-        <h2>UNIQUE DESIGN.</h2>
-      </TextHeaderContainers>
-      <MarginBottom margin="0.5rem" />
-      <TextHeaderContainers>
-        <h2>UNIQUE DESIGN.</h2>
-      </TextHeaderContainers>
-      <ServicesTextContainer>
+
+      <div style={styles.marginBottomSmall} />
+
+      <nav aria-label="Studio services" style={styles.servicesContainer}>
         <WebDesignContainer />
-        <MarginBottom margin="0.7rem" />
-        {/* <GraphicDesign />
-        <GraphicDesign />
-        <GraphicDesign />
-        <MarginBottom margin="0.7rem" />
-        <MarketingDigital />
-        <MarketingDigital />
-        <MarketingDigital /> */}
-        <MarginBottom margin="0.7rem" />
-      </ServicesTextContainer>
-      <MarginBottom margin="1rem" />
-      <button className="boton">
-        <div className="equis">+</div>
+        <div style={styles.marginBottomMedium} />
+        <div style={styles.marginBottomMedium} />
+      </nav>
+
+      <div style={styles.marginBottom} />
+
+      <button
+        style={styles.button}
+        aria-label="Scroll to next section"
+        onClick={() => {
+          const nextSection = document.querySelector('section');
+          if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }}
+      >
+        <div style={styles.plusIcon} aria-hidden="true">
+          +
+        </div>
       </button>
-    </HeaderContainer>
+    </header>
   );
 };
 
 export default HeaderSection;
 
-const HeaderContainer = styled.section`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 5%;
-  margin: 0;
-  background: var(--ch-bg, transparent);
-
-  &:hover h2 {
-    transition: 0.5s all ease;
-  }
-
-  h2 {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-  }
-
-  h2:hover::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background-color: lightblue;
-    top: 50%;
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s ease-out;
-  }
-
-  h2:hover::before {
-    transform-origin: left;
-    transform: scaleX(1);
-  }
-
-  .boton {
-    width: 50px;
-    height: 50px;
-    border: 1px solid black;
-    background-color: transparent;
-    border-radius: 50%;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .equis {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    color: black;
-  }
-`;
-const HeaderTitle = styled.div`
-  @font-face {
-    font-family: "APERCU";
-    src: url(${ApercuFont}) format("otf");
-    font-style: normal;
-    font-weight: normal;
-    letter-spacing: -5px;
-  }
-  h1 {
-    font-size: 120px;
-    font-family: "APERCU";
-  }
-
-  @media (max-width: 1024px) {
-    h1 {
-      font-size: 90px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    h1 {
-      font-size: 70px;
-    }
-  }
-
-  @media (max-width: 440px) {
-    h1 {
-      font-size: 60px;
-      white-space: wrap;
-    }
-  }
-`;
-
-const ServicesTextContainer = styled.div`
-  margin-top: 3%;
-`;
+const styles = {
+  container: {
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: '0 5%',
+    margin: 0,
+    background: 'var(--ch-bg, transparent)',
+  },
+  titleWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  title: {
+    fontFamily: 'APERCU, sans-serif',
+    fontWeight: 'normal',
+    letterSpacing: '-5px',
+    margin: 0,
+  },
+  marginBottom: {
+    height: '1rem',
+  },
+  marginBottomSmall: {
+    height: '0.5rem',
+  },
+  marginBottomMedium: {
+    height: '0.7rem',
+  },
+  servicesContainer: {
+    marginTop: '3%',
+  },
+  button: {
+    width: 50,
+    height: 50,
+    border: '1px solid black',
+    backgroundColor: 'transparent',
+    borderRadius: '50%',
+    position: 'relative',
+    cursor: 'pointer',
+  },
+  plusIcon: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    fontSize: 24,
+    color: 'black',
+  },
+};

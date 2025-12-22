@@ -4,12 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import ActIIIChronos from '../Components/ActIIIChronos';
 import ActIIPromoModule from '../Components/ActIIPromoModule';
-import Colors from '../Components/Colors';
 import Footer from '../Components/Footer/Footer';
 import GalleryFormats from '../Components/GalleryFormats';
 import HeaderSection from '../Components/HeadingSection/HeaderSection';
 import LolaConfiguratorRNFriendly from '../Components/LolaConfiguratorRNFriendly';
 import Only7PriceReveal from '../Components/Only7PriceReveal';
+import Unum from '../Components/Unum';
 
 // Definir colores de fondo por sección (fuera del componente para evitar recreación)
 const SECTION_BACKGROUNDS = {
@@ -395,7 +395,7 @@ function App() {
     return (
       <>
         <HeaderSection />
-        <Colors colors="colors" typ="fonts" />
+        <Unum colors="colors" typ="fonts" />
         <GalleryFormats />
         <ActIIPromoModule />
         <LolaConfiguratorRNFriendly
@@ -410,7 +410,9 @@ function App() {
         <Footer />
 
         {/* Stepper elegante para vertical */}
-        <div
+        <nav
+          aria-label="Page navigation"
+          role="navigation"
           style={{
             position: 'fixed',
             right: '3rem',
@@ -428,14 +430,19 @@ function App() {
             const isPast = currentSection > idx;
 
             return (
-              <div
+              <button
                 key={idx}
+                aria-label={`Go to ${sectionNames[idx]} section`}
+                aria-current={isActive ? 'page' : undefined}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
                   cursor: 'pointer',
                   transition: 'all 0.3s',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
                 }}
                 onClick={() => {
                   const sections = document.querySelectorAll(
@@ -447,6 +454,7 @@ function App() {
                 }}
               >
                 <div
+                  aria-hidden="true"
                   style={{
                     opacity: isActive ? 1 : 0,
                     transform: isActive ? 'translateX(0)' : 'translateX(8px)',
@@ -492,6 +500,7 @@ function App() {
                   />
                   {isActive && (
                     <div
+                      aria-hidden="true"
                       style={{
                         position: 'absolute',
                         width: '8px',
@@ -503,10 +512,10 @@ function App() {
                     />
                   )}
                 </div>
-              </div>
+              </button>
             );
           })}
-        </div>
+        </nav>
 
         <style>{`
           @keyframes pulse {
@@ -580,7 +589,7 @@ function App() {
             overflowX: 'hidden',
           }}
         >
-          <Colors colors="colors" typ="fonts" />
+          <Unum colors="colors" typ="fonts" />
         </div>
 
         {/* Section 3: Act II */}
@@ -720,7 +729,9 @@ function App() {
       )}
 
       {/* Stepper elegante lateral */}
-      <div
+      <nav
+        aria-label="Page navigation"
+        role="navigation"
         style={{
           position: 'fixed',
           right: '3rem',
@@ -747,14 +758,19 @@ function App() {
           const isPast = currentSection > idx;
 
           return (
-            <div
+            <button
               key={idx}
+              aria-label={`Go to ${sectionNames[idx]} section`}
+              aria-current={isActive ? 'page' : undefined}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
+                background: 'none',
+                border: 'none',
+                padding: 0,
               }}
               onClick={() => {
                 if (containerRef.current) {
@@ -767,6 +783,7 @@ function App() {
             >
               {/* Label (solo visible en hover o activo) */}
               <div
+                aria-hidden="true"
                 style={{
                   opacity: isActive ? 1 : 0,
                   transform: isActive ? 'translateX(0)' : 'translateX(8px)',
@@ -816,6 +833,7 @@ function App() {
                 {/* Inner dot for active */}
                 {isActive && (
                   <div
+                    aria-hidden="true"
                     style={{
                       position: 'absolute',
                       width: '8px',
@@ -827,10 +845,10 @@ function App() {
                   />
                 )}
               </div>
-            </div>
+            </button>
           );
         })}
-      </div>
+      </nav>
 
       <style>{`
         @keyframes pulse {

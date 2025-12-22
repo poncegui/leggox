@@ -1,49 +1,61 @@
-import "./HeaderSection.css";
-
 import React from "react";
-import styled from "styled-components";
+
+const INTRO_LINES = [
+  [{ text: "Be one of us. Be unique.", bold: false }],
+  [
+    { text: "Handcrafted acrylic works", bold: true },
+    { text: "Only 7 Collection", bold: false },
+  ],
+  [
+    { text: "We hunt the treasure", bold: false },
+    { text: "We encapsulate it forever, creating unique pieces.", bold: false },
+  ],
+];
 
 export const WebDesignContainer = () => {
   return (
-    <>
-      <WebDesingText>
-        <strong> Choose on of us </strong> — Acrilict art —
-        <strong> Design yours </strong> — handmade —
-        <strong> Order now, be unique.</strong>
-      </WebDesingText>
-      <WebDesingText>
-        <strong> Choose on of us </strong> — Acrilict art —
-        <strong> Design yours </strong> — handmade —
-        <strong> Order now, be unique.</strong>
-      </WebDesingText>
-      <WebDesingText>
-        <strong> Choose on of us </strong> — Acrilict art —
-        <strong> Design yours </strong> — handmade —
-        <strong> Order now, be unique.</strong>
-      </WebDesingText>
-    </>
+    <div style={styles.container} role="region" aria-label="Introduction">
+      {INTRO_LINES.map((line, lineIndex) => (
+        <div key={lineIndex} style={styles.textLine}>
+          {line.map((item, idx) => (
+            <React.Fragment key={idx}>
+              {item.bold ? (
+                <span style={styles.boldText}>{item.text}</span>
+              ) : (
+                <span style={styles.regularText}>{item.text}</span>
+              )}
+              {idx < line.length - 1 && (
+                <span style={styles.separator}> — </span>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 };
 
-// export const GraphicDesign = () => {
-//   return (
-//     <WebDesingText>
-//       <strong> Branding </strong> — Identidad digital —
-//       <strong> Diseño gráfico </strong>
-//     </WebDesingText>
-//   );
-// };
-
-// export const MarketingDigital = () => {
-//   return (
-//     <WebDesingText>
-//       <strong>Asesoramiento en redes sociales</strong> — Publicaciones
-//       personalizadas —<strong> Interacción con tu audiencia</strong>
-//     </WebDesingText>
-//   );
-// };
-
-const WebDesingText = styled.div`
-  margin-top: 0.5%;
-`;
-WebDesingText.displayName = "Bloques de Textos";
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    maxWidth: 720,
+  },
+  textLine: {
+    fontFamily: "ANONYMOUS, sans-serif",
+    fontSize: 16,
+    lineHeight: 1.6,
+    color: "rgba(0,0,0,0.85)",
+  },
+  boldText: {
+    fontWeight: 700,
+    letterSpacing: 0.2,
+  },
+  regularText: {
+    fontWeight: 400,
+  },
+  separator: {
+    opacity: 0.5,
+  },
+};

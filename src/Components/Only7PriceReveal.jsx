@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Gallery Price Component
@@ -9,20 +9,20 @@ import React from 'react';
  */
 
 const COLORS = {
-  ink: '#000000',
-  ink70: 'rgba(0,0,0,0.70)',
-  ink30: 'rgba(0,0,0,0.30)',
-  red: '#C23B3B', // punto rojo galería
+  ink: "#000000",
+  ink70: "rgba(0,0,0,0.70)",
+  ink30: "rgba(0,0,0,0.30)",
+  red: "#C23B3B", // punto rojo galería
 };
 
 export default function GalleryPrice({
   selectedModel, // "ORIGO" | "FORMA" | "MOTUS" | "ESSENTIA" | null
   isCompleted = false, // Only show when configuration is completed
   priceMap = {
-    ORIGO: '€1,200',
-    FORMA: '€1,450',
-    MOTUS: '€1,650',
-    ESSENTIA: '€1,900',
+    ORIGO: "€1,200",
+    FORMA: "€1,450",
+    MOTUS: "€1,650",
+    ESSENTIA: "€1,900",
   },
 }) {
   if (!selectedModel || !isCompleted) return null;
@@ -32,11 +32,11 @@ export default function GalleryPrice({
       role="region"
       aria-label="Artwork price"
       style={{
-        backgroundColor: '#F6EFE6',
-        padding: '10px 20px 40px 20px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: "#F6EFE6",
+        padding: "10px 20px 40px 20px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <div
@@ -44,14 +44,14 @@ export default function GalleryPrice({
           paddingTop: 12,
           borderTop: `1px solid ${COLORS.ink30}`,
           maxWidth: 420,
-          width: '100%',
+          width: "100%",
         }}
       >
         {/* Model line */}
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 10,
           }}
         >
@@ -61,7 +61,7 @@ export default function GalleryPrice({
             style={{
               width: 8,
               height: 8,
-              borderRadius: '50%',
+              borderRadius: "50%",
               backgroundColor: COLORS.red,
             }}
           />
@@ -94,7 +94,7 @@ export default function GalleryPrice({
             marginTop: 4,
             fontSize: 12,
             color: COLORS.ink30,
-            fontStyle: 'italic',
+            fontStyle: "italic",
           }}
         >
           Only 7 pieces per model
