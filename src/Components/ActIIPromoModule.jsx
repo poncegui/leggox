@@ -19,21 +19,6 @@ const COLORS = {
   card: "rgba(255,255,255,0.35)",
 };
 
-function useIsWide(breakpoint = 980) {
-  const [wide, setWide] = useState(() =>
-    typeof window === "undefined" ? false : window.innerWidth >= breakpoint,
-  );
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onResize = () => setWide(window.innerWidth >= breakpoint);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [breakpoint]);
-
-  return wide;
-}
-
 // RN-like primitives
 function Box({ as: Tag = "div", style, children, ...rest }) {
   return (
@@ -89,8 +74,7 @@ function Mono({ as: Tag = "div", style, children, ...rest }) {
 }
 
 export default function ActIIPromoModule({
-  titleTop = "/. Design yours or choose one of us",
-  titleBottom = "or chose one of us.",
+  titleTop = "/. Choose to be one of us",
   actLabel = "ACT II.",
   // Contenido del panel izquierdo (sustituto de COLORS)
   leftSections = [
@@ -119,22 +103,35 @@ export default function ActIIPromoModule({
   onPressCTA,
   ctaLabel = "Open configurator",
 }) {
-  const isWide = useIsWide(980);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isSmall = windowWidth < 480;
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 980;
 
   const layoutStyle = useMemo(
     () => ({
       display: "flex",
-      flexDirection: isWide ? "row-reverse" : "column",
+      flexDirection: isMobile ? "column" : "row-reverse",
       borderRadius: 0,
       overflow: "hidden",
       border: "none",
       width: "100%",
-      height: "100vh",
+      height: isMobile ? "auto" : "100vh",
       margin: 0,
       justifyContent: "center",
-      gap: isWide ? "7rem" : "2rem",
+      gap: isSmall ? "1.5rem" : isMobile ? "2rem" : isTablet ? "3rem" : "7rem",
+      padding: isMobile ? "3rem 1rem" : 0,
     }),
-    [isWide],
+    [isSmall, isMobile, isTablet],
   );
 
   return (
@@ -168,12 +165,16 @@ export default function ActIIPromoModule({
         {/* RIGHT PANEL - Title */}
         <div
           style={{
-            width: isWide ? "70%" : "100%",
+            width: isMobile ? "100%" : isTablet ? "65%" : "70%",
             backgroundColor: COLORS.charcoal,
-            padding: isWide ? "3% 5%" : "2% 3%",
+            padding: isMobile
+              ? "2rem 1.5rem"
+              : isTablet
+                ? "2.5rem 3rem"
+                : "3% 5%",
             display: "flex",
             alignItems: "center",
-            textAlign: "right",
+            textAlign: isMobile ? "center" : "right",
           }}
         >
           <Col style={{ width: "100%", gap: 18 }}>
@@ -181,7 +182,7 @@ export default function ActIIPromoModule({
               as="h2"
               style={{
                 color: COLORS.offWhite,
-                fontSize: isWide ? 80 : 40,
+                fontSize: isSmall ? 36 : isMobile ? 42 : isTablet ? 60 : 80,
                 fontWeight: 700,
                 fontFamily: "APERCU",
                 lineHeight: 1.02,
@@ -195,9 +196,11 @@ export default function ActIIPromoModule({
         {/* LEFT PANEL - Specs */}
         <div
           style={{
-            width: isWide ? "30%" : "90%",
+            width: isMobile ? "100%" : isTablet ? "35%" : "30%",
+            maxWidth: isMobile ? "400px" : "none",
+            margin: isMobile ? "0 auto" : 0,
             backgroundColor: COLORS.offWhite,
-            padding: isWide ? 24 : 18,
+            padding: isSmall ? 18 : isMobile ? 20 : isTablet ? 22 : 24,
             position: "relative",
             display: "flex",
             flexDirection: "column",
@@ -205,11 +208,11 @@ export default function ActIIPromoModule({
             alignItems: "center",
           }}
         >
-          <Col style={{ gap: 18 }}>
+          <Col style={{ gap: isSmall ? 14 : 18 }}>
             <Text
               as="h3"
               style={{
-                fontSize: 18,
+                fontSize: isSmall ? 16 : 18,
                 fontWeight: 700,
                 letterSpacing: -0.3,
                 fontFamily: "APERCU",
@@ -221,13 +224,13 @@ export default function ActIIPromoModule({
             <div style={{ height: 1, backgroundColor: COLORS.ink20 }} />
 
             {/* Sections */}
-            <Col as="div" style={{ gap: 16 }}>
+            <Col as="div" style={{ gap: isSmall ? 12 : 16 }}>
               {leftSections.map((s) => (
                 <div key={s.label}>
                   <Text
                     as="div"
                     style={{
-                      fontSize: 14,
+                      fontSize: isSmall ? 12 : 14,
                       fontWeight: 700,
                       letterSpacing: 0.2,
                       textTransform: "uppercase",
@@ -235,11 +238,21 @@ export default function ActIIPromoModule({
                   >
                     {s.label}
                   </Text>
-                  <Text style={{ marginTop: 6, fontSize: 16, fontWeight: 500 }}>
+                  <Text
+                    style={{
+                      marginTop: 6,
+                      fontSize: isSmall ? 14 : 16,
+                      fontWeight: 500,
+                    }}
+                  >
                     {s.value}
                   </Text>
                   <Text
-                    style={{ marginTop: 4, fontSize: 13, color: COLORS.ink70 }}
+                    style={{
+                      marginTop: 4,
+                      fontSize: isSmall ? 12 : 13,
+                      color: COLORS.ink70,
+                    }}
                   >
                     {s.note}
                   </Text>
@@ -247,26 +260,15 @@ export default function ActIIPromoModule({
               ))}
             </Col>
 
-            {/* ACT II badge dentro del panel blanco */}
+            {/* ACT II badge - estilo simple como Unum */}
             <div
               style={{
-                position: "relative",
-                left: "15rem",
-                width: 200,
-                height: 100,
-                backgroundColor: "#add8e6",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-                textAlign: "center",
-                lineHeight: "100px",
+                fontFamily: "APERCU, sans-serif",
+                marginTop: "1rem",
               }}
               aria-hidden="true"
             >
-              <Mono style={{ fontSize: 16, letterSpacing: 1.5 }}>
-                {actLabel}
-              </Mono>
+              {actLabel}
             </div>
           </Col>
         </div>

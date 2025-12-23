@@ -1,20 +1,20 @@
-import './HeaderSection.css';
+import "./HeaderSection.css";
 
-import React from 'react';
-import { TextHeaderContainers } from '../../globalStyles';
-import { WebDesignContainer } from './Paragraphs';
+import React from "react";
+import { TextHeaderContainers } from "../../globalStyles";
+import { WebDesignContainer } from "./Paragraphs";
 
 const HeaderSection = () => {
   const [windowWidth, setWindowWidth] = React.useState(
-    typeof window !== 'undefined' ? window.innerWidth : 1200
+    typeof window !== "undefined" ? window.innerWidth : 1200,
   );
 
   React.useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const isSmall = windowWidth <= 440;
@@ -63,9 +63,9 @@ const HeaderSection = () => {
         style={styles.button}
         aria-label="Scroll to next section"
         onClick={() => {
-          const nextSection = document.querySelector('section');
+          const nextSection = document.querySelector("section");
           if (nextSection) {
-            nextSection.scrollIntoView({ behavior: 'smooth' });
+            nextSection.scrollIntoView({ behavior: "smooth" });
           }
         }}
       >
@@ -81,51 +81,51 @@ export default HeaderSection;
 
 const styles = {
   container: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    padding: '0 5%',
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    padding: "0 5%",
     margin: 0,
-    background: 'var(--ch-bg, transparent)',
+    background: "var(--ch-bg, transparent)",
   },
   titleWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
   title: {
-    fontFamily: 'APERCU, sans-serif',
-    fontWeight: 'normal',
-    letterSpacing: '-5px',
+    fontFamily: "APERCU, sans-serif",
+    fontWeight: "normal",
+    letterSpacing: "-5px",
     margin: 0,
   },
   marginBottom: {
-    height: '1rem',
+    height: "1rem",
   },
   marginBottomSmall: {
-    height: '0.5rem',
+    height: "0.5rem",
   },
   marginBottomMedium: {
-    height: '0.7rem',
+    height: "0.7rem",
   },
   servicesContainer: {
-    marginTop: '3%',
+    marginTop: "3%",
   },
   button: {
     width: 50,
     height: 50,
-    border: '1px solid black',
-    backgroundColor: 'transparent',
-    borderRadius: '50%',
-    position: 'relative',
-    cursor: 'pointer',
+    border: "1px solid black",
+    backgroundColor: "transparent",
+    borderRadius: "50%",
+    position: "relative",
+    cursor: "pointer",
   },
   plusIcon: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     fontSize: 24,
-    color: 'black',
+    color: "black",
   },
 };

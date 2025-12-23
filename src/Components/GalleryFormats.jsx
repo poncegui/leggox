@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 
 /**
  * GalleryFormats
@@ -8,69 +8,106 @@ import React from 'react';
  */
 
 const COLORS = {
-  bg: '#F6EFE6',
-  ink: '#000000',
-  ink70: 'rgba(0,0,0,0.70)',
-  ink40: 'rgba(0,0,0,0.40)',
-  line: '#A9D6E5',
-  card: 'rgba(255,255,255,0.5)',
+  bg: "#F6EFE6",
+  ink: "#000000",
+  ink70: "rgba(0,0,0,0.70)",
+  ink40: "rgba(0,0,0,0.40)",
+  line: "#A9D6E5",
+  card: "rgba(255,255,255,0.5)",
 };
 
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+const toRoman = (n) => {
+  const map = [
+    [1000, "M"],
+    [900, "CM"],
+    [500, "D"],
+    [400, "CD"],
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"],
+  ];
+  let res = "";
+  for (const [v, s] of map) {
+    while (n >= v) {
+      res += s;
+      n -= v;
+    }
+  }
+  return res;
+};
 
 function editionLabel(index) {
-  return `${ROMAN[index]}/VII`;
+  return `${toRoman(index + 1)}/VII`;
 }
 
 const FORMATS = [
   {
-    id: 'TABULA',
-    title: 'TABULA',
-    subtitle: 'Acrylic wall piece',
-    img: '/img/tabula.jpg',
+    id: "TABULA",
+    title: "TABULA",
+    subtitle: "Acrylic wall piece",
+    img: "/img/tabula.jpg",
     edition: editionLabel(0),
   },
   {
-    id: 'MENSUS_OVALIS',
-    title: 'MENSUS OVALIS',
-    subtitle: 'Oval table · wood or metal legs',
-    img: '/img/mensus-ovalis.jpg',
+    id: "MENSUS_OVALIS",
+    title: "MENSUS OVALIS",
+    subtitle: "Oval table · wood or metal legs",
+    img: "/img/mensus-ovalis.jpg",
     edition: editionLabel(1),
   },
   {
-    id: 'FIGURA_SACRA',
-    title: 'FIGURA SACRA',
-    subtitle: 'Acrylic figure · glitter',
-    img: '/img/figura-sacra.jpg',
+    id: "FIGURA_SACRA",
+    title: "FIGURA SACRA",
+    subtitle: "Acrylic figure · glitter",
+    img: "/img/figura-sacra.jpg",
     edition: editionLabel(2),
   },
   {
-    id: 'MENSUS_ORBIS',
-    title: 'MENSUS ORBIS',
-    subtitle: 'Round table · Ø35 cm',
-    img: '/img/mensus-orbis.jpg',
+    id: "MENSUS_ORBIS",
+    title: "MENSUS ORBIS",
+    subtitle: "Round table · Ø35 cm",
+    img: "/img/mensus-orbis.jpg",
     edition: editionLabel(3),
   },
 ];
 
 export default function GalleryFormats() {
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
+  const isSmall = windowWidth < 480;
+
   return (
     <section
       aria-labelledby="gallery-formats-title"
       style={{
         backgroundColor: COLORS.bg,
-        padding: '56px 20px',
+        padding: isMobile ? "40px 20px" : "56px 20px",
       }}
     >
       {/* Accessible hidden title */}
       <h2
         id="gallery-formats-title"
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: -9999,
           width: 1,
           height: 1,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         Available formats
@@ -79,17 +116,17 @@ export default function GalleryFormats() {
       <div
         style={{
           maxWidth: 1100,
-          margin: '0 auto',
-          display: 'flex',
-          flexDirection: 'column',
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
           gap: 36,
         }}
       >
         {/* Header */}
-        <div>
+        <div style={{ textAlign: isMobile ? "center" : "left" }}>
           <div
             style={{
-              fontSize: 34,
+              fontSize: isSmall ? 28 : isMobile ? 32 : 34,
               fontWeight: 900,
               letterSpacing: -0.8,
             }}
@@ -104,6 +141,7 @@ export default function GalleryFormats() {
               width: 220,
               height: 3,
               backgroundColor: COLORS.line,
+              margin: isMobile ? "10px auto 0" : "10px 0 0",
             }}
           />
 
@@ -113,6 +151,7 @@ export default function GalleryFormats() {
               fontSize: 15,
               color: COLORS.ink70,
               maxWidth: 520,
+              margin: isMobile ? "14px auto 0" : "14px 0 0",
             }}
           >
             Available formats within the ONLY 7 COLLECTION.
@@ -123,31 +162,33 @@ export default function GalleryFormats() {
         <div
           role="list"
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
+            display: "flex",
+            flexWrap: "wrap",
             gap: 24,
+            justifyContent: isMobile ? "center" : "flex-start",
           }}
         >
-          {FORMATS.map(item => (
+          {FORMATS.map((item) => (
             <article
               key={item.id}
               role="listitem"
               tabIndex={0}
               style={{
-                flex: '1 1 220px',
-                minWidth: 220,
-                maxWidth: 260,
+                flex: isMobile ? "0 1 auto" : "1 1 220px",
+                minWidth: isMobile ? 280 : 220,
+                maxWidth: isMobile ? 340 : 260,
+                width: isMobile ? "100%" : "auto",
                 backgroundColor: COLORS.card,
                 borderRadius: 18,
-                overflow: 'hidden',
-                outline: 'none',
+                overflow: "hidden",
+                outline: "none",
               }}
-              onFocus={e => {
+              onFocus={(e) => {
                 e.currentTarget.style.boxShadow =
-                  '0 0 0 3px rgba(169,214,229,0.5)';
+                  "0 0 0 3px rgba(169,214,229,0.5)";
               }}
-              onBlur={e => {
-                e.currentTarget.style.boxShadow = 'none';
+              onBlur={(e) => {
+                e.currentTarget.style.boxShadow = "none";
               }}
             >
               {/* Image */}
@@ -156,8 +197,8 @@ export default function GalleryFormats() {
                 style={{
                   height: 220,
                   backgroundImage: `url(${item.img})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               />
 
@@ -165,16 +206,16 @@ export default function GalleryFormats() {
               <div
                 style={{
                   padding: 14,
-                  display: 'flex',
-                  flexDirection: 'column',
+                  display: "flex",
+                  flexDirection: "column",
                   gap: 6,
                 }}
               >
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
                   <div

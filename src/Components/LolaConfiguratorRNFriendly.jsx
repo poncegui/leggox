@@ -133,14 +133,8 @@ const MATERIA_OPTIONS = [
   {
     id: "CURATA",
     title: "Studio curated",
-    meta: "Vosotros aportáis materiales/ingredientes",
+    meta: "Materials selected and curated by the studio",
     latinMateria: "MATERIA CURATA",
-  },
-  {
-    id: "PROPRIA",
-    title: "Client provided",
-    meta: "Me dais instrucciones de envío",
-    latinMateria: "MATERIA PROPRIA",
   },
 ];
 
@@ -201,7 +195,16 @@ function Card({ children, onPress, selected }) {
   );
 }
 
-function StepPill({ index, label, active, done, onPress, disabled }) {
+function StepPill({
+  index,
+  label,
+  active,
+  done,
+  onPress,
+  disabled,
+  isMobile,
+  isSmall,
+}) {
   return (
     <button
       type="button"
@@ -211,25 +214,40 @@ function StepPill({ index, label, active, done, onPress, disabled }) {
         ...styles.stepPill,
         ...(active ? styles.stepPillActive : {}),
         ...(disabled ? styles.stepPillDisabled : {}),
+        padding: isSmall ? "8px 10px" : isMobile ? "9px 12px" : "10px 14px",
+        fontSize: isSmall ? 11 : isMobile ? 12 : 13,
       }}
     >
       <span
         style={{
           fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-          fontSize: 12,
+          fontSize: isSmall ? 11 : isMobile ? 12 : 12,
         }}
       >
         {String(index).padStart(2, "0")}
       </span>
-      <span style={{ marginLeft: 8, fontSize: 13 }}>{label}</span>
-      <span style={{ marginLeft: 8, fontSize: 12 }}>{done ? "✓" : ""}</span>
+      <span
+        style={{ marginLeft: 8, fontSize: isSmall ? 12 : isMobile ? 13 : 13 }}
+      >
+        {label}
+      </span>
+      <span
+        style={{ marginLeft: 8, fontSize: isSmall ? 11 : isMobile ? 12 : 12 }}
+      >
+        {done ? "✓" : ""}
+      </span>
     </button>
   );
 }
 
-function OptionList({ data, value, onChange, showRedDot }) {
+function OptionList({ data, value, onChange, showRedDot, isMobile, isSmall }) {
   return (
-    <div style={styles.grid}>
+    <div
+      style={{
+        ...styles.grid,
+        gridTemplateColumns: isMobile || isSmall ? "1fr" : "1fr 1fr",
+      }}
+    >
       {data.map((item) => {
         const selected = value === item.id;
         return (
@@ -308,12 +326,28 @@ export default function LolaConfiguratorRNFriendly({
   onCompletedChange,
 }) {
   const [step, setStep] = useState(1);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
 
   const [modelId, setModelId] = useState("");
   const [supportId, setSupportId] = useState("");
   const [materiaMode, setMateriaMode] = useState("");
   const [designId, setDesignId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
+
+  // Responsive breakpoints
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 980;
+  const isSmall = windowWidth < 480;
 
   const selectedModel = useMemo(
     () => MODELS.find((x) => x.id === modelId),
@@ -358,11 +392,7 @@ export default function LolaConfiguratorRNFriendly({
   const canGo3 = Boolean(modelId && supportId);
   const needsDesign = materiaMode === "CURATA";
   const canSubmit = Boolean(
-    modelId &&
-    supportId &&
-    materiaMode &&
-    (materiaMode === "PROPRIA" || (materiaMode === "CURATA" && designId)) &&
-    availability?.available,
+    modelId && supportId && materiaMode && designId && availability?.available,
   );
 
   function next() {
@@ -541,17 +571,54 @@ export default function LolaConfiguratorRNFriendly({
 
   return (
     <div style={styles.page}>
-      <Container>
+      <Container
+        style={{
+          padding: isSmall
+            ? "12px"
+            : isMobile
+              ? "15px"
+              : isTablet
+                ? "18px"
+                : "20px",
+          paddingTop: isSmall ? 16 : isMobile ? 20 : isTablet ? 24 : 28,
+          paddingBottom: isSmall ? 30 : isMobile ? 35 : 40,
+        }}
+      >
         {/* Header */}
         <Column style={{ gap: 16 }}>
           <Mono
-            style={{ fontSize: 11, letterSpacing: 0.8, color: COLORS.ink70 }}
+            style={{
+              fontSize: isSmall ? 10 : isMobile ? 11 : 11,
+              letterSpacing: 0.8,
+              color: COLORS.ink70,
+            }}
           >
             {COLLECTION_NAME}
           </Mono>
-          <Text style={styles.bigTitle}>{COLLECTION_TAGLINE}</Text>
+          <Text
+            style={{
+              ...styles.bigTitle,
+              fontSize: isSmall ? 22 : isMobile ? 28 : isTablet ? 38 : 54,
+              letterSpacing: isSmall
+                ? -0.6
+                : isMobile
+                  ? -0.8
+                  : isTablet
+                    ? -1
+                    : -1.2,
+              lineHeight: isSmall ? 1.1 : isMobile ? 1.15 : isTablet ? 1.2 : 1,
+            }}
+          >
+            {COLLECTION_TAGLINE}
+          </Text>
           <div style={styles.line} />
-          <Mono style={{ maxWidth: 720 }}>
+          <Mono
+            style={{
+              maxWidth: 720,
+              fontSize: isSmall ? 11 : isMobile ? 12 : 14,
+              lineHeight: isSmall ? 1.5 : isMobile ? 1.6 : 1.7,
+            }}
+          >
             Each combination limited to 7 pieces.
             <br />
             <span style={{ color: "rgba(0,0,0,0.9)" }}>
@@ -560,7 +627,13 @@ export default function LolaConfiguratorRNFriendly({
           </Mono>
 
           {/* Step pills */}
-          <Row style={styles.stepRow}>
+          <Row
+            style={{
+              ...styles.stepRow,
+              flexWrap: "wrap",
+              gap: isSmall ? 6 : 8,
+            }}
+          >
             <StepPill
               index={1}
               label="Model"
@@ -568,6 +641,8 @@ export default function LolaConfiguratorRNFriendly({
               done={Boolean(modelId)}
               onPress={() => setStep(1)}
               disabled={false}
+              isMobile={isMobile}
+              isSmall={isSmall}
             />
             <StepPill
               index={2}
@@ -576,6 +651,8 @@ export default function LolaConfiguratorRNFriendly({
               done={Boolean(supportId)}
               onPress={() => setStep(2)}
               disabled={!canGo2}
+              isMobile={isMobile}
+              isSmall={isSmall}
             />
             <StepPill
               index={3}
@@ -584,14 +661,27 @@ export default function LolaConfiguratorRNFriendly({
               done={Boolean(materiaMode)}
               onPress={() => setStep(3)}
               disabled={!canGo3}
+              isMobile={isMobile}
+              isSmall={isSmall}
             />
           </Row>
         </Column>
 
         {/* Content + Summary */}
-        <div style={styles.layout}>
+        <div
+          style={{
+            ...styles.layout,
+            flexDirection: isMobile ? "column" : "row",
+          }}
+        >
           {/* Main */}
-          <div style={styles.main}>
+          <div
+            style={{
+              ...styles.main,
+              padding: isSmall ? 12 : isMobile ? 14 : isTablet ? 16 : 18,
+              borderRadius: isSmall ? 16 : isMobile ? 18 : isTablet ? 20 : 22,
+            }}
+          >
             {step === 1 && (
               <Column style={{ gap: 14 }}>
                 <Text style={styles.sectionTitle}>01 · Select Model</Text>
@@ -600,6 +690,8 @@ export default function LolaConfiguratorRNFriendly({
                   value={modelId}
                   onChange={(id) => setModelId(id)}
                   showRedDot={true}
+                  isMobile={isMobile}
+                  isSmall={isSmall}
                 />
               </Column>
             )}
@@ -616,6 +708,8 @@ export default function LolaConfiguratorRNFriendly({
                     data={SUPPORTS}
                     value={supportId}
                     onChange={(id) => setSupportId(id)}
+                    isMobile={isMobile}
+                    isSmall={isSmall}
                   />
                 )}
               </Column>
@@ -623,34 +717,32 @@ export default function LolaConfiguratorRNFriendly({
 
             {step === 3 && (
               <Column style={{ gap: 14 }}>
-                <Text style={styles.sectionTitle}>03 · Materia</Text>
+                <Text style={styles.sectionTitle}>03 · Design Selection</Text>
                 {!canGo3 ? (
                   <Text style={{ color: COLORS.ink70 }}>
                     Select model and support first.
                   </Text>
                 ) : (
                   <>
-                    <OptionList
-                      data={MATERIA_OPTIONS}
-                      value={materiaMode}
-                      onChange={(id) => {
-                        setMateriaMode(id);
-                        setDesignId("");
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: COLORS.ink70,
+                        marginBottom: 8,
                       }}
+                    >
+                      All pieces are studio curated with hand-selected materials
+                    </Text>
+                    <OptionList
+                      data={LOLA_DESIGNS}
+                      value={designId}
+                      onChange={(id) => {
+                        setDesignId(id);
+                        setMateriaMode("CURATA");
+                      }}
+                      isMobile={isMobile}
+                      isSmall={isSmall}
                     />
-
-                    {materiaMode === "CURATA" && (
-                      <Column style={{ gap: 14, marginTop: 18 }}>
-                        <Text style={{ fontSize: 14, fontWeight: 700 }}>
-                          Select Studio Design
-                        </Text>
-                        <OptionList
-                          data={LOLA_DESIGNS}
-                          value={designId}
-                          onChange={(id) => setDesignId(id)}
-                        />
-                      </Column>
-                    )}
                   </>
                 )}
               </Column>
@@ -714,8 +806,21 @@ export default function LolaConfiguratorRNFriendly({
           </div>
 
           {/* Summary (sticky-ish but RN-friendly) */}
-          <div style={styles.summaryWrap}>
-            <div style={styles.summary}>
+          <div
+            style={{
+              ...styles.summaryWrap,
+              width: isMobile ? "100%" : "360px",
+              maxWidth: isMobile ? "100%" : "360px",
+              minWidth: isMobile ? "0" : "360px",
+            }}
+          >
+            <div
+              style={{
+                ...styles.summary,
+                padding: isSmall ? 12 : isMobile ? 14 : 16,
+                borderRadius: isSmall ? 16 : isMobile ? 18 : 22,
+              }}
+            >
               <Text style={{ fontWeight: 600, letterSpacing: -0.2 }}>
                 Configuration
               </Text>
@@ -1009,169 +1114,3 @@ const styles = {
     textAlign: "right",
   },
 };
-
-/**
- * Tiny responsive upgrade with a single media query-ish approach:
- * If quieres, lo hago 100% RN style sin grid (solo flexWrap).
- * En web, el grid ayuda, pero se puede quitar.
- */
-
-// Optional: quick responsive tweak without CSS files.
-// In real projects, move this to CSS or use a breakpoint hook.
-if (typeof window !== "undefined") {
-  const applyResponsive = () => {
-    const wide = window.innerWidth >= 980;
-    const tablet = window.innerWidth >= 768 && window.innerWidth < 980;
-    const mobile = window.innerWidth < 768;
-    const smallMobile = window.innerWidth < 480;
-
-    // Layout direction and summary width
-    // Desktop y tablet: mantener diseño de 2 columnas (horizontal)
-    // Mobile: cambiar a vertical
-    if (mobile || smallMobile) {
-      styles.layout.flexDirection = "column";
-      styles.summaryWrap.width = "100%";
-      styles.summaryWrap.maxWidth = "100%";
-      styles.summaryWrap.minWidth = "0";
-    } else {
-      // Desktop y tablet mantienen layout horizontal
-      styles.layout.flexDirection = "row";
-      styles.summaryWrap.width = "360px";
-      styles.summaryWrap.maxWidth = "360px";
-      styles.summaryWrap.minWidth = "360px";
-    }
-
-    // Main padding and border radius
-    if (smallMobile) {
-      styles.main.padding = 12;
-      styles.main.borderRadius = 16;
-      styles.container.padding = "12px";
-      styles.container.paddingTop = 16;
-      styles.container.paddingBottom = 30;
-    } else if (mobile) {
-      styles.main.padding = 14;
-      styles.main.borderRadius = 18;
-      styles.container.padding = "15px";
-      styles.container.paddingTop = 20;
-      styles.container.paddingBottom = 35;
-    } else if (tablet) {
-      styles.main.padding = 16;
-      styles.main.borderRadius = 20;
-      styles.container.padding = "18px";
-      styles.container.paddingTop = 24;
-    } else {
-      styles.main.padding = 18;
-      styles.main.borderRadius = 22;
-      styles.container.padding = "20px";
-      styles.container.paddingTop = 28;
-    }
-
-    // Grid columns: mantener 2 columnas en desktop/tablet, 1 en mobile
-    if (mobile || smallMobile) {
-      styles.grid.gridTemplateColumns = "1fr";
-    } else {
-      styles.grid.gridTemplateColumns = "1fr 1fr";
-    }
-
-    // Responsive title size
-    if (smallMobile) {
-      styles.bigTitle.fontSize = 22;
-      styles.bigTitle.letterSpacing = -0.6;
-      styles.bigTitle.lineHeight = 1.1;
-      styles.container.padding = 12;
-      styles.container.paddingTop = 16;
-      styles.container.paddingBottom = 30;
-    } else if (mobile) {
-      styles.bigTitle.fontSize = 28;
-      styles.bigTitle.letterSpacing = -0.8;
-      styles.bigTitle.lineHeight = 1.15;
-      styles.container.padding = 15;
-      styles.container.paddingTop = 20;
-      styles.container.paddingBottom = 35;
-    } else if (tablet) {
-      styles.bigTitle.fontSize = 38;
-      styles.bigTitle.letterSpacing = -1;
-      styles.bigTitle.lineHeight = 1.2;
-      styles.container.padding = 18;
-      styles.container.paddingTop = 24;
-    } else {
-      styles.bigTitle.fontSize = 54;
-      styles.bigTitle.letterSpacing = -1.2;
-      styles.bigTitle.lineHeight = 1;
-      styles.container.padding = 20;
-      styles.container.paddingTop = 28;
-    }
-
-    // Responsive mono text
-    if (smallMobile) {
-      styles.mono.fontSize = 11;
-      styles.mono.lineHeight = 1.5;
-    } else if (mobile) {
-      styles.mono.fontSize = 12;
-      styles.mono.lineHeight = 1.6;
-    } else {
-      styles.mono.fontSize = 14;
-      styles.mono.lineHeight = 1.7;
-    }
-
-    // Responsive section title
-    if (smallMobile) {
-      styles.sectionTitle.fontSize = 14;
-    } else if (mobile) {
-      styles.sectionTitle.fontSize = 15;
-    } else {
-      styles.sectionTitle.fontSize = 16;
-    }
-
-    // Responsive card padding
-    if (smallMobile) {
-      styles.card.padding = 12;
-      styles.card.borderRadius = 14;
-    } else if (mobile) {
-      styles.card.padding = 14;
-      styles.card.borderRadius = 16;
-    } else {
-      styles.card.padding = 16;
-      styles.card.borderRadius = 18;
-    }
-
-    // Responsive summary
-    if (smallMobile) {
-      styles.summary.padding = 12;
-      styles.summary.borderRadius = 16;
-    } else if (mobile) {
-      styles.summary.padding = 14;
-      styles.summary.borderRadius = 18;
-    } else {
-      styles.summary.padding = 16;
-      styles.summary.borderRadius = 22;
-    }
-
-    // Responsive button sizing
-    if (smallMobile) {
-      styles.button.padding = "10px 12px";
-      styles.button.fontSize = 12;
-    } else if (mobile) {
-      styles.button.padding = "11px 14px";
-      styles.button.fontSize = 13;
-    } else {
-      styles.button.padding = "12px 16px";
-      styles.button.fontSize = 14;
-    }
-
-    // Responsive step pill
-    if (smallMobile) {
-      styles.stepPill.padding = "8px 10px";
-      styles.stepPill.fontSize = 11;
-    } else if (mobile) {
-      styles.stepPill.padding = "9px 12px";
-      styles.stepPill.fontSize = 12;
-    } else {
-      styles.stepPill.padding = "10px 14px";
-      styles.stepPill.fontSize = 13;
-    }
-  };
-  // One-time + resize listener
-  applyResponsive();
-  window.addEventListener("resize", applyResponsive);
-}

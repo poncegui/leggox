@@ -19,21 +19,6 @@ const COLORS = {
   line: "#A9D6E5",
 };
 
-function useIsWide(breakpoint = 980) {
-  const [wide, setWide] = useState(() =>
-    typeof window === "undefined" ? false : window.innerWidth >= breakpoint,
-  );
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onResize = () => setWide(window.innerWidth >= breakpoint);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [breakpoint]);
-
-  return wide;
-}
-
 // RN-like primitives
 function Box({ as: Tag = "div", style, children, ...rest }) {
   return (
@@ -99,21 +84,34 @@ export default function ActIIIChronos({
   ],
   footerNote = "Handcrafted pieces require time. Thank you for waiting.",
 }) {
-  const isWide = useIsWide(980);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isSmall = windowWidth < 480;
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 980;
 
   const layoutStyle = useMemo(
     () => ({
       display: "flex",
-      flexDirection: isWide ? "row-reverse" : "column",
+      flexDirection: isMobile ? "column" : "row-reverse",
       borderRadius: 0,
       overflow: "hidden",
       border: "none",
       width: "100%",
-      minHeight: isWide ? "600px" : "auto",
+      minHeight: isMobile ? "auto" : "600px",
       justifyContent: "center",
-      gap: 0,
+      gap: isSmall ? "1.5rem" : isMobile ? "2rem" : isTablet ? "3rem" : "7rem",
+      padding: isMobile ? "3rem 1rem" : 0,
     }),
-    [isWide],
+    [isSmall, isMobile, isTablet],
   );
 
   return (
@@ -147,12 +145,16 @@ export default function ActIIIChronos({
         {/* RIGHT PANEL - Title */}
         <div
           style={{
-            width: isWide ? "70%" : "100%",
+            width: isMobile ? "100%" : isTablet ? "65%" : "70%",
             backgroundColor: COLORS.charcoal,
-            padding: isWide ? "80px 60px" : "40px 24px",
+            padding: isMobile
+              ? "40px 24px"
+              : isTablet
+                ? "60px 40px"
+                : "80px 60px",
             display: "flex",
             alignItems: "center",
-            textAlign: "right",
+            textAlign: isMobile ? "center" : "right",
           }}
         >
           <Col style={{ width: "100%", gap: 18 }}>
@@ -160,7 +162,7 @@ export default function ActIIIChronos({
               as="h2"
               style={{
                 color: COLORS.offWhite,
-                fontSize: isWide ? 80 : 48,
+                fontSize: isSmall ? 36 : isMobile ? 42 : isTablet ? 60 : 80,
                 fontWeight: 700,
                 fontFamily: "APERCU",
                 lineHeight: 1.02,
@@ -168,15 +170,33 @@ export default function ActIIIChronos({
             >
               {titleTop}
             </Text>
+            <Text
+              style={{
+                color: COLORS.offWhite,
+                fontSize: isSmall ? 14 : isMobile ? 15 : 16,
+                lineHeight: 1.5,
+                opacity: 0.9,
+              }}
+            >
+              {subtitle}
+            </Text>
           </Col>
         </div>
 
         {/* LEFT PANEL - Content */}
         <div
           style={{
-            width: isWide ? "30%" : "100%",
+            width: isMobile ? "100%" : isTablet ? "35%" : "30%",
+            maxWidth: isMobile ? "400px" : "none",
+            margin: isMobile ? "0 auto" : 0,
             backgroundColor: COLORS.offWhite,
-            padding: isWide ? "80px 40px" : "40px 24px",
+            padding: isSmall
+              ? "40px 24px"
+              : isMobile
+                ? "50px 30px"
+                : isTablet
+                  ? "60px 35px"
+                  : "80px 40px",
             position: "relative",
             display: "flex",
             flexDirection: "column",
@@ -184,20 +204,7 @@ export default function ActIIIChronos({
             alignItems: "center",
           }}
         >
-          <Col style={{ gap: 18, maxWidth: 420 }}>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                letterSpacing: -0.3,
-                fontFamily: "APERCU",
-              }}
-            >
-              {subtitle}
-            </Text>
-
-            <div style={{ height: 1, backgroundColor: COLORS.ink20 }} />
-
+          <Col style={{ gap: isSmall ? 14 : 18, maxWidth: 420 }}>
             {/* Main text */}
             <Col style={{ gap: 14 }}>
               {mainText.map((paragraph, idx) => (
@@ -230,8 +237,16 @@ export default function ActIIIChronos({
               {footerNote}
             </Mono>
 
-            {/* ACT III badge */}
-            <div className="ActoContainerBlue">Act III.</div>
+            {/* ACT III badge - estilo simple como Unum */}
+            <div
+              style={{
+                fontFamily: "APERCU, sans-serif",
+                marginTop: "1rem",
+              }}
+              aria-hidden="true"
+            >
+              Act III.
+            </div>
           </Col>
         </div>
       </div>
