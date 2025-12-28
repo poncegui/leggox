@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "./static/css/main.12fea087.css",
-    "main.js": "./static/js/main.fec36b2b.js",
+    "main.js": "./static/js/main.ef26d418.js",
     "static/media/seat-124-biarbol.png": "./static/media/seat-124-biarbol.9f3a3e731d3451c849c1.png",
     "static/media/seat-bocanegra.png": "./static/media/seat-bocanegra.309cadec2f2c168254f2.png",
     "static/media/seat-131-biarbol.png": "./static/media/seat-131-biarbol.074ab81771be0cd41be5.png",
@@ -36,10 +36,10 @@
     "static/media/radiador-aluminio-doble-nucleo-fl-bi-arbol.jpg": "./static/media/radiador-aluminio-doble-nucleo-fl-bi-arbol.ab149b5b835776b08565.jpg",
     "index.html": "./index.html",
     "main.12fea087.css.map": "./static/css/main.12fea087.css.map",
-    "main.fec36b2b.js.map": "./static/js/main.fec36b2b.js.map"
+    "main.ef26d418.js.map": "./static/js/main.ef26d418.js.map"
   },
   "entrypoints": [
     "static/css/main.12fea087.css",
-    "static/js/main.fec36b2b.js"
+    "static/js/main.ef26d418.js"
   ]
 }
