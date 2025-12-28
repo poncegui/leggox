@@ -1,138 +1,109 @@
 import "../App.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import ActIIIChronos from "../Components/ActIIIChronos";
-import ActIIPromoModule from "../Components/ActIIPromoModule";
+import PromoModule from "../Components/PromoModule";
 import Footer from "../Components/Footer/Footer";
-import GalleryFormats from "../Components/GalleryFormats";
 import HeaderSection from "../Components/HeadingSection/HeaderSection";
-import LolaConfiguratorRNFriendly from "../Components/LolaConfiguratorRNFriendly";
-import Only7PriceReveal from "../Components/Only7PriceReveal";
-import Unum from "../Components/Unum";
+import BuscadorPiezas from "../Components/BuscadorPiezas";
+import ProductShowcase from "../Components/ProductShowcase";
+import ScrollStepper from "../Components/ScrollStepper";
+import mercagarageLogo from "../Assets/images/mercagarage-logo.jpg";
+import PitlaneRunner from "../Components/PitlaneRunner";
 
-// Definir colores de fondo por sección (fuera del componente para evitar recreación)
+// ✅ Iconos SVG para Mercagarage
+function IconTruckFast({ size = 32, color = "currentColor" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="1" y="3" width="15" height="13" />
+      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+      <circle cx="5.5" cy="18.5" r="2.5" />
+      <circle cx="18.5" cy="18.5" r="2.5" />
+    </svg>
+  );
+}
+
+function IconCheck({ size = 32, color = "currentColor" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function IconMessageCircle({ size = 32, color = "currentColor" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  );
+}
+
+// Definir colores de fondo por sección
 const SECTION_BACKGROUNDS = {
-  0: "#F6EFE6", // Header - cream
-  1: "#F6EFE6", // Colors - cream
-  2: "#F9EFE4", // Act II - offWhite
-  3: "#F6EFE6", // GalleryFormats - cream
-  4: "#F6EFE6", // Configurator - cream
-  5: "#F6EFE6", // Price - cream
-  6: "#333333", // Act III - charcoal (DARK)
-  7: "#F6EFE6", // Footer - cream
-};
-
-// Función para determinar si un color es oscuro
-const isColorDark = (hexColor) => {
-  const hex = hexColor.replace("#", "");
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness < 128;
+  0: "#000000", // Header - Negro
+  1: "#FFFFFF", // Modelos - Blanco
+  2: "#1A1A1A", // Catálogo - Gris oscuro
+  3: "#FFFFFF", // Galería - Blanco
+  4: "#000000", // Configurador - Negro
+  5: "#FFFFFF", // Presupuesto - Blanco
+  6: "#1A1A1A", // Manguitos - Gris oscuro
+  7: "#000000", // Información - Negro
+  8: "#1A1A1A", // Footer/Contacto - Gris oscuro
 };
 
 function App() {
-  const [selectedModel, setSelectedModel] = useState(null);
-  const [isConfigCompleted, setIsConfigCompleted] = useState(false);
+  const [setIsConfigCompleted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isTabletOrMobile, setIsTabletOrMobile] = useState(false);
-  const [viewMode, setViewMode] = useState(null); // null, 'horizontal', 'vertical'
-  const [showWelcome, setShowWelcome] = useState(true);
-  const [stepperColors, setStepperColors] = useState({
-    text: "#000",
-    active: "#A9D6E5",
-    inactive: "rgba(0,0,0,0.3)",
-    past: "#000",
-  });
-  const containerRef = useRef(null);
 
-  const totalSections = 8;
+  const totalSections = 6;
 
-  // Actualizar colores del stepper según la sección actual
+  // Detectar mobile
   useEffect(() => {
-    const bgColor = SECTION_BACKGROUNDS[currentSection] || "#F6EFE6";
-    const isDark = isColorDark(bgColor);
-
-    console.log("Section:", currentSection, "BG:", bgColor, "isDark:", isDark); // Debug
-
-    if (isDark) {
-      // Fondo oscuro - colores claros
-      setStepperColors({
-        text: "#F6EFE6",
-        active: "#A9D6E5",
-        inactive: "rgba(246,239,230,0.4)",
-        past: "#F6EFE6",
-      });
-    } else {
-      // Fondo claro - colores oscuros
-      setStepperColors({
-        text: "#000000",
-        active: "#A9D6E5",
-        inactive: "rgba(0,0,0,0.3)",
-        past: "#000000",
-      });
-    }
-  }, [currentSection]);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 768;
-      const tabletOrMobile = window.innerWidth < 980;
-      setIsMobile(mobile);
-      setIsTabletOrMobile(tabletOrMobile);
-      // En mobile, auto-seleccionar vertical
-      if (mobile && viewMode === null) {
-        setViewMode("vertical");
-        setShowWelcome(false);
-      }
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, [viewMode]);
-
-  useEffect(() => {
-    if (viewMode !== "horizontal" || !containerRef.current) return;
-
-    const handleWheel = (e) => {
-      const container = containerRef.current;
-      // Si hay movimiento horizontal del touchpad, déjalo pasar naturalmente
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        // Gesto horizontal dominante - scroll horizontal nativo
-        return;
-      }
-      // Si es movimiento vertical, conviértelo a horizontal
-      e.preventDefault();
-      container.scrollLeft += e.deltaY;
-    };
-
-    const container = containerRef.current;
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    return () => container.removeEventListener("wheel", handleWheel);
-  }, [viewMode]);
-
-  useEffect(() => {
-    if (viewMode !== "horizontal" || !containerRef.current) return;
-
-    const handleScroll = () => {
-      const container = containerRef.current;
-      const section = Math.round(container.scrollLeft / window.innerWidth);
-      setCurrentSection(section);
-    };
-
-    const container = containerRef.current;
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [viewMode]);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Tracking de scroll para vista vertical
   useEffect(() => {
-    if (viewMode !== "vertical") return;
-
     const handleScroll = () => {
+      if (!hasScrolled) {
+        setHasScrolled(true);
+        document.documentElement.style.scrollSnapType = "y proximity";
+      }
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
       const section = Math.round(scrollPosition / windowHeight);
@@ -140,1054 +111,265 @@ function App() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial call
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [viewMode, totalSections]);
+  }, [totalSections, hasScrolled]);
 
-  const scrollToSection = (direction) => {
-    if (!containerRef.current) return;
-    const nextSection = Math.max(
-      0,
-      Math.min(totalSections - 1, currentSection + direction),
-    );
-    containerRef.current.scrollTo({
-      left: nextSection * window.innerWidth,
-      behavior: "smooth",
-    });
-  };
+  const sectionNames = [
+    "Inicio",
+    "Ofertas",
+    "Manguitos y radiadores",
+    "Búsqueda por vehículo",
+    "Leggox Race",
+    "Contacto",
+  ];
 
-  // Pantalla de bienvenida
-  if (showWelcome && !isMobile) {
-    return (
+  return (
+    <>
+      {/* Secciones */}
       <div
         style={{
-          width: "100vw",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#F6EFE6",
-          padding: "20px",
+          minHeight: "100vh",
+          scrollSnapAlign: "start",
+          backgroundColor: SECTION_BACKGROUNDS[0],
         }}
       >
+        <HeaderSection />
+      </div>
+
+      <section
+        style={{
+          minHeight: "100vh",
+          scrollSnapAlign: "start",
+          backgroundColor: SECTION_BACKGROUNDS[2],
+        }}
+      >
+        <PromoModule />
+      </section>
+
+      <section
+        style={{
+          minHeight: "100vh",
+          scrollSnapAlign: "start",
+          backgroundColor: SECTION_BACKGROUNDS[1],
+        }}
+      >
+        <ProductShowcase />
+      </section>
+
+      <section
+        style={{
+          minHeight: "100vh",
+          scrollSnapAlign: "start",
+          backgroundColor: SECTION_BACKGROUNDS[4],
+        }}
+      >
+        <BuscadorPiezas onComplete={() => setIsConfigCompleted(true)} />
+      </section>
+
+      {/* Footer */}
+      <div style={{ background: "#1A1A1A", padding: "40px 0" }}>
+        <PitlaneRunner />
+      </div>
+      <Footer />
+
+      {/* Sección Mercagarage */}
+      <section
+        style={{
+          backgroundColor: "#000000",
+          padding: "60px 20px",
+          borderTop: "1px solid rgba(255,255,255,0.1)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Bandera de competición de fondo */}
         <div
           style={{
-            maxWidth: "600px",
-            textAlign: "center",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `
+            repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 35px,
+              rgba(255,255,255,0.02) 35px,
+              rgba(255,255,255,0.02) 70px
+            ),
+            repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 35px,
+              rgba(255,255,255,0.02) 35px,
+              rgba(255,255,255,0.02) 70px
+            )
+          `,
+            opacity: 0.6,
+            pointerEvents: "none",
+          }}
+        />
+
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            maxWidth: 1200,
+            margin: "0 auto",
             display: "flex",
             flexDirection: "column",
-            gap: "32px",
+            alignItems: "center",
+            gap: 40,
           }}
         >
+          {/* Logo y título */}
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            style={{
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
           >
-            <h1
+            <img
+              src={mercagarageLogo}
+              alt="Mercagarage - Accesorios & Recambios Automoción"
               style={{
-                fontFamily: "APERCU",
-                fontSize: "48px",
-                fontWeight: 700,
-                letterSpacing: "-1.2px",
-                margin: 0,
-              }}
-            >
-              Welcome to
-              <br />
-              Lola Gun Studio
-            </h1>
-            <div
-              style={{
-                width: "80px",
-                height: "3px",
-                backgroundColor: "#A9D6E5",
-                margin: "0 auto",
+                maxWidth: 450,
+                width: "100%",
+                height: "auto",
+                marginBottom: 16,
               }}
             />
             <p
               style={{
-                fontFamily:
-                  "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-                fontSize: "14px",
-                color: "rgba(0,0,0,0.7)",
-                letterSpacing: "0.5px",
+                fontSize: 16,
                 margin: 0,
+                color: "rgba(255,255,255,0.7)",
+                fontFamily:
+                  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial',
               }}
             >
-              ONLY 7 COLLECTION — EACH ONE UNIQUE
+              Tu tienda de recambios para coches clásicos
             </p>
           </div>
 
+          {/* Features grid */}
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "20px",
-              marginTop: "24px",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 24,
+              width: "100%",
             }}
           >
-            <p
-              style={{
-                fontSize: "16px",
-                color: "rgba(0,0,0,0.8)",
-                margin: 0,
-                lineHeight: 1.6,
-              }}
-            >
-              Choose your viewing experience
-            </p>
+            <div style={mercaStyles.featureCard}>
+              <div style={mercaStyles.featureIcon}>
+                <IconTruckFast size={28} color="#E01E37" />
+              </div>
+              <h3 style={mercaStyles.featureTitle}>Envío rápido</h3>
+              <p style={mercaStyles.featureText}>
+                Recibe tus piezas en 24-48h en toda la península
+              </p>
+            </div>
 
-            <div
-              style={{ display: "flex", gap: "16px", justifyContent: "center" }}
-            >
-              {/* Botón Horizontal */}
-              <button
-                onClick={() => {
-                  setViewMode("horizontal");
-                  setShowWelcome(false);
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 12px 24px rgba(0,0,0,0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(0,0,0,0.1)";
-                }}
-                style={{
-                  flex: 1,
-                  maxWidth: "240px",
-                  padding: "24px 32px",
-                  backgroundColor: "#000",
-                  color: "#F6EFE6",
-                  border: "none",
-                  borderRadius: "16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "12px",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                }}
-              >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-                <div>
-                  <div
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      marginBottom: "4px",
-                    }}
-                  >
-                    Horizontal
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      opacity: 0.7,
-                      fontFamily: "ui-monospace, monospace",
-                    }}
-                  >
-                    Gallery experience
-                  </div>
-                </div>
-              </button>
+            <div style={mercaStyles.featureCard}>
+              <div style={mercaStyles.featureIcon}>
+                <IconCheck size={28} color="#E01E37" />
+              </div>
+              <h3 style={mercaStyles.featureTitle}>Calidad garantizada</h3>
+              <p style={mercaStyles.featureText}>
+                Productos testados y certificados para tu clásico
+              </p>
+            </div>
 
-              {/* Botón Vertical */}
-              <button
-                onClick={() => {
-                  setViewMode("vertical");
-                  setShowWelcome(false);
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 12px 24px rgba(0,0,0,0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(0,0,0,0.1)";
-                }}
-                style={{
-                  flex: 1,
-                  maxWidth: "240px",
-                  padding: "24px 32px",
-                  backgroundColor: "#fff",
-                  color: "#000",
-                  border: "1px solid rgba(0,0,0,0.2)",
-                  borderRadius: "16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "12px",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                }}
-              >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <polyline points="19 12 12 19 5 12" />
-                </svg>
-                <div>
-                  <div
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      marginBottom: "4px",
-                    }}
-                  >
-                    Vertical
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      opacity: 0.7,
-                      fontFamily: "ui-monospace, monospace",
-                    }}
-                  >
-                    Classic scroll
-                  </div>
-                </div>
-              </button>
+            <div style={mercaStyles.featureCard}>
+              <div style={mercaStyles.featureIcon}>
+                <IconMessageCircle size={28} color="#E01E37" />
+              </div>
+              <h3 style={mercaStyles.featureTitle}>Asesoramiento</h3>
+              <p style={mercaStyles.featureText}>
+                Expertos en coches clásicos te ayudan a elegir
+              </p>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  }
 
-  // Vista vertical
-  if (viewMode === "vertical") {
-    const sectionNames = [
-      "Home",
-      "Colors",
-      "Design",
-      "Formats",
-      "Configure",
-      "Price",
-      "Time",
-      "Contact",
-    ];
-
-    return (
-      <>
-        <HeaderSection />
-        <Unum colors="colors" typ="fonts" />
-        <GalleryFormats />
-        <ActIIPromoModule />
-        <LolaConfiguratorRNFriendly
-          onModelSelect={(model) => setSelectedModel(model)}
-          onCompletedChange={(completed) => setIsConfigCompleted(completed)}
-        />
-        <Only7PriceReveal
-          selectedModel={selectedModel}
-          isCompleted={isConfigCompleted}
-        />
-        <ActIIIChronos />
-        <Footer />
-
-        {/* Stepper elegante para vertical - solo desktop */}
-        {!isTabletOrMobile && (
-          <nav
-            aria-label="Page navigation"
-            role="navigation"
-            style={{
-              position: "fixed",
-              right: "3rem",
-              top: "50%",
-              transform: "translateY(-50%)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              zIndex: 1000,
-              transition: "all 0.4s ease",
-            }}
+          {/* CTA */}
+          <a
+            href="https://mercagarage.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={mercaStyles.ctaButton}
           >
-            {Array.from({ length: totalSections }).map((_, idx) => {
-              const isActive = currentSection === idx;
-              const isPast = currentSection > idx;
-
-              return (
-                <button
-                  key={idx}
-                  aria-label={`Go to ${sectionNames[idx]} section`}
-                  aria-current={isActive ? "page" : undefined}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    cursor: "pointer",
-                    transition: "all 0.3s",
-                    background: "none",
-                    border: "none",
-                    padding: 0,
-                  }}
-                  onClick={() => {
-                    const sections = document.querySelectorAll(
-                      "section, header, footer",
-                    );
-                    if (sections[idx]) {
-                      sections[idx].scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                >
-                  <div
-                    aria-hidden="true"
-                    style={{
-                      opacity: isActive ? 1 : 0,
-                      transform: isActive ? "translateX(0)" : "translateX(8px)",
-                      transition: "all 0.4s ease",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      letterSpacing: "0.5px",
-                      color: stepperColors.text,
-                      whiteSpace: "nowrap",
-                      fontFamily: "ui-monospace, monospace",
-                    }}
-                  >
-                    {sectionNames[idx]}
-                  </div>
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: isActive ? "20px" : "12px",
-                        height: isActive ? "20px" : "12px",
-                        borderRadius: "50%",
-                        border: `2px solid ${
-                          isActive
-                            ? stepperColors.active
-                            : isPast
-                              ? stepperColors.past
-                              : stepperColors.inactive
-                        }`,
-                        backgroundColor: isPast
-                          ? stepperColors.past
-                          : "transparent",
-                        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                        boxShadow: isActive
-                          ? `0 0 0 4px ${stepperColors.active}33`
-                          : "none",
-                      }}
-                    />
-                    {isActive && (
-                      <div
-                        aria-hidden="true"
-                        style={{
-                          position: "absolute",
-                          width: "8px",
-                          height: "8px",
-                          borderRadius: "50%",
-                          backgroundColor: stepperColors.active,
-                          animation: "pulse 2s infinite",
-                        }}
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
-        )}
-
-        {/* Stepper horizontal bottom para mobile/tablet en modo horizontal */}
-        {isTabletOrMobile && viewMode === "horizontal" && (
-          <nav
-            aria-label="Page navigation"
-            role="navigation"
-            style={{
-              position: "fixed",
-              bottom: "2rem",
-              left: "50%",
-              transform: "translateX(-50%)",
-              display: "flex",
-              flexDirection: "row",
-              gap: "16px",
-              zIndex: 1000,
-              transition: "all 0.4s ease",
-              padding: "12px 24px",
-              backgroundColor: "rgba(246, 239, 230, 0.9)",
-              backdropFilter: "blur(10px)",
-              borderRadius: "50px",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-            }}
-          >
-            {Array.from({ length: totalSections }).map((_, idx) => {
-              const sectionNames = [
-                "Home",
-                "Colors",
-                "Design",
-                "Formats",
-                "Configure",
-                "Price",
-                "Time",
-                "Contact",
-              ];
-              const isActive = currentSection === idx;
-              const isPast = currentSection > idx;
-
-              return (
-                <button
-                  key={idx}
-                  aria-label={`Go to ${sectionNames[idx]} section`}
-                  aria-current={isActive ? "page" : undefined}
-                  style={{
-                    cursor: "pointer",
-                    transition: "all 0.3s",
-                    background: "none",
-                    border: "none",
-                    padding: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onClick={() => {
-                    if (containerRef.current) {
-                      containerRef.current.scrollTo({
-                        left: idx * window.innerWidth,
-                        behavior: "smooth",
-                      });
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: isActive ? "16px" : "10px",
-                        height: isActive ? "16px" : "10px",
-                        borderRadius: "50%",
-                        border: `2px solid ${
-                          isActive
-                            ? stepperColors.active
-                            : isPast
-                              ? stepperColors.past
-                              : stepperColors.inactive
-                        }`,
-                        backgroundColor: isPast
-                          ? stepperColors.past
-                          : "transparent",
-                        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                        boxShadow: isActive
-                          ? `0 0 0 4px ${stepperColors.active}33`
-                          : "none",
-                      }}
-                    />
-                    {isActive && (
-                      <div
-                        aria-hidden="true"
-                        style={{
-                          position: "absolute",
-                          width: "6px",
-                          height: "6px",
-                          borderRadius: "50%",
-                          backgroundColor: stepperColors.active,
-                          animation: "pulse 2s infinite",
-                        }}
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
-        )}
-
-        {/* Stepper horizontal para mobile/tablet - bottom */}
-        {isTabletOrMobile && (
-          <nav
-            aria-label="Page navigation"
-            role="navigation"
-            style={{
-              position: "fixed",
-              bottom: "2rem",
-              left: "50%",
-              transform: "translateX(-50%)",
-              display: "flex",
-              flexDirection: "row",
-              gap: "16px",
-              zIndex: 1000,
-              transition: "all 0.4s ease",
-              padding: "12px 24px",
-              backgroundColor: "rgba(246, 239, 230, 0.9)",
-              backdropFilter: "blur(10px)",
-              borderRadius: "50px",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-            }}
-          >
-            {Array.from({ length: totalSections }).map((_, idx) => {
-              const isActive = currentSection === idx;
-              const isPast = currentSection > idx;
-
-              return (
-                <button
-                  key={idx}
-                  aria-label={`Go to ${sectionNames[idx]} section`}
-                  aria-current={isActive ? "page" : undefined}
-                  style={{
-                    cursor: "pointer",
-                    transition: "all 0.3s",
-                    background: "none",
-                    border: "none",
-                    padding: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onClick={() => {
-                    const sections = document.querySelectorAll(
-                      "section, header, footer",
-                    );
-                    if (sections[idx]) {
-                      sections[idx].scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: isActive ? "16px" : "10px",
-                        height: isActive ? "16px" : "10px",
-                        borderRadius: "50%",
-                        border: `2px solid ${
-                          isActive
-                            ? stepperColors.active
-                            : isPast
-                              ? stepperColors.past
-                              : stepperColors.inactive
-                        }`,
-                        backgroundColor: isPast
-                          ? stepperColors.past
-                          : "transparent",
-                        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                        boxShadow: isActive
-                          ? `0 0 0 4px ${stepperColors.active}33`
-                          : "none",
-                      }}
-                    />
-                    {isActive && (
-                      <div
-                        aria-hidden="true"
-                        style={{
-                          position: "absolute",
-                          width: "6px",
-                          height: "6px",
-                          borderRadius: "50%",
-                          backgroundColor: stepperColors.active,
-                          animation: "pulse 2s infinite",
-                        }}
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
-        )}
-
-        <style>{`
-          @keyframes pulse {
-            0%, 100% {
-              opacity: 1;
-              transform: scale(1);
-            }
-            50% {
-              opacity: 0.7;
-              transform: scale(0.9);
-            }
-          }
-        `}</style>
-      </>
-    );
-  }
-
-  // Vista horizontal
-  return (
-    <>
-      <div
-        ref={containerRef}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100vw",
-          height: "100vh",
-          overflowX: "auto",
-          overflowY: "hidden",
-          scrollSnapType: "x mandatory",
-          scrollSnapStop: "always",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          WebkitOverflowScrolling: "touch",
-        }}
-      >
-        <style>{`
-          div::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-
-        {/* Section 1: Header */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <HeaderSection />
+            <span>Visitar Mercagarage</span>
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
+      </section>
 
-        {/* Section 2: Colors */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <Unum colors="colors" typ="fonts" />
-        </div>
-
-        {/* Section 3: Act II */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <ActIIPromoModule />
-        </div>
-
-        {/* Section 4: Formats Gallery */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <GalleryFormats />
-        </div>
-
-        {/* Section 5: Configurator */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <LolaConfiguratorRNFriendly
-            onModelSelect={(model) => setSelectedModel(model)}
-            onCompletedChange={(completed) => setIsConfigCompleted(completed)}
-          />
-        </div>
-
-        {/* Section 6: Price */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <Only7PriceReveal
-            selectedModel={selectedModel}
-            isCompleted={isConfigCompleted}
-          />
-        </div>
-
-        {/* Section 7: Act III */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <ActIIIChronos />
-        </div>
-
-        {/* Section 8: Footer */}
-        <div
-          style={{
-            minWidth: "100vw",
-            width: "100vw",
-            height: "100vh",
-            scrollSnapAlign: "center",
-            scrollSnapStop: "always",
-            flexShrink: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <Footer />
-        </div>
-      </div>
-
-      {/* Zonas clickeables laterales invisibles */}
-      {currentSection > 0 && (
-        <div
-          onClick={() => scrollToSection(-1)}
-          aria-label="Previous section"
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 0,
-            width: "15%",
-            height: "100vh",
-            cursor: "w-resize",
-            zIndex: 999,
-          }}
+      {/* Indicador de carretera con coche - Solo desktop */}
+      {!isMobile && (
+        <ScrollStepper
+          currentSection={currentSection}
+          totalSections={totalSections}
+          sectionNames={sectionNames}
         />
       )}
-
-      {currentSection < totalSections - 1 && (
-        <div
-          onClick={() => scrollToSection(1)}
-          aria-label="Next section"
-          style={{
-            position: "fixed",
-            right: 0,
-            top: 0,
-            width: "15%",
-            height: "100vh",
-            cursor: "e-resize",
-            zIndex: 999,
-          }}
-        />
-      )}
-
-      {/* Stepper elegante lateral - solo desktop */}
-      {!isTabletOrMobile && (
-        <nav
-          aria-label="Page navigation"
-          role="navigation"
-          style={{
-            position: "fixed",
-            right: "3rem",
-            bottom: "1.5rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-            zIndex: 1000,
-            transition: "all 0.4s ease",
-          }}
-        >
-          {Array.from({ length: totalSections }).map((_, idx) => {
-            const sectionNames = [
-              "Home",
-              "Colors",
-              "Design",
-              "Formats",
-              "Configure",
-              "Price",
-              "Time",
-              "Contact",
-            ];
-            const isActive = currentSection === idx;
-            const isPast = currentSection > idx;
-
-            return (
-              <button
-                key={idx}
-                aria-label={`Go to ${sectionNames[idx]} section`}
-                aria-current={isActive ? "page" : undefined}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  cursor: "pointer",
-                  transition: "all 0.3s",
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                }}
-                onClick={() => {
-                  if (containerRef.current) {
-                    containerRef.current.scrollTo({
-                      left: idx * window.innerWidth,
-                      behavior: "smooth",
-                    });
-                  }
-                }}
-              >
-                {/* Label (solo visible en hover o activo) */}
-                <div
-                  aria-hidden="true"
-                  style={{
-                    opacity: isActive ? 1 : 0,
-                    transform: isActive ? "translateX(0)" : "translateX(8px)",
-                    transition: "all 0.4s ease",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    letterSpacing: "0.5px",
-                    color: stepperColors.text,
-                    whiteSpace: "nowrap",
-                    fontFamily: "ui-monospace, monospace",
-                  }}
-                >
-                  {sectionNames[idx]}
-                </div>
-
-                {/* Dot indicator */}
-                <div
-                  style={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {/* Outer ring */}
-                  <div
-                    style={{
-                      width: isActive ? "20px" : "12px",
-                      height: isActive ? "20px" : "12px",
-                      borderRadius: "50%",
-                      border: `2px solid ${
-                        isActive
-                          ? stepperColors.active
-                          : isPast
-                            ? stepperColors.past
-                            : stepperColors.inactive
-                      }`,
-                      backgroundColor: isPast
-                        ? stepperColors.past
-                        : "transparent",
-                      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                      boxShadow: isActive
-                        ? `0 0 0 4px ${stepperColors.active}33`
-                        : "none",
-                    }}
-                  />
-                  {/* Inner dot for active */}
-                  {isActive && (
-                    <div
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        backgroundColor: stepperColors.active,
-                        animation: "pulse 2s infinite",
-                      }}
-                    />
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </nav>
-      )}
-
-      {/* Stepper horizontal bottom para mobile/tablet en modo horizontal */}
-      {isTabletOrMobile && viewMode === "horizontal" && (
-        <nav
-          aria-label="Page navigation"
-          role="navigation"
-          style={{
-            position: "fixed",
-            bottom: "2rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "row",
-            gap: "16px",
-            zIndex: 1000,
-            transition: "all 0.4s ease",
-            padding: "12px 24px",
-            backgroundColor: "rgba(246, 239, 230, 0.9)",
-            backdropFilter: "blur(10px)",
-            borderRadius: "50px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          }}
-        >
-          {Array.from({ length: totalSections }).map((_, idx) => {
-            const sectionNames = [
-              "Home",
-              "Colors",
-              "Design",
-              "Formats",
-              "Configure",
-              "Price",
-              "Time",
-              "Contact",
-            ];
-            const isActive = currentSection === idx;
-            const isPast = currentSection > idx;
-
-            return (
-              <button
-                key={idx}
-                aria-label={`Go to ${sectionNames[idx]} section`}
-                aria-current={isActive ? "page" : undefined}
-                style={{
-                  cursor: "pointer",
-                  transition: "all 0.3s",
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onClick={() => {
-                  if (containerRef.current) {
-                    containerRef.current.scrollTo({
-                      left: idx * window.innerWidth,
-                      behavior: "smooth",
-                    });
-                  }
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: isActive ? "16px" : "10px",
-                      height: isActive ? "16px" : "10px",
-                      borderRadius: "50%",
-                      border: `2px solid ${
-                        isActive
-                          ? stepperColors.active
-                          : isPast
-                            ? stepperColors.past
-                            : stepperColors.inactive
-                      }`,
-                      backgroundColor: isPast
-                        ? stepperColors.past
-                        : "transparent",
-                      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                      boxShadow: isActive
-                        ? `0 0 0 4px ${stepperColors.active}33`
-                        : "none",
-                    }}
-                  />
-                  {isActive && (
-                    <div
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        width: "6px",
-                        height: "6px",
-                        borderRadius: "50%",
-                        backgroundColor: stepperColors.active,
-                        animation: "pulse 2s infinite",
-                      }}
-                    />
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </nav>
-      )}
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.7;
-            transform: scale(0.9);
-          }
-        }
-      `}</style>
     </>
   );
 }
 
 export default App;
+
+const mercaStyles = {
+  featureCard: {
+    padding: 24,
+    borderRadius: 16,
+    border: "1px solid rgba(255,255,255,0.1)",
+    background: "rgba(255,255,255,0.03)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    gap: 12,
+    transition: "all 0.3s ease",
+  },
+  featureIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  featureTitle: {
+    fontSize: 16,
+    fontWeight: 800,
+    margin: 0,
+    color: "#FFFFFF",
+    fontFamily: "APERCU, sans-serif",
+  },
+  featureText: {
+    fontSize: 13,
+    margin: 0,
+    color: "rgba(255,255,255,0.6)",
+    lineHeight: 1.5,
+    fontFamily:
+      'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial',
+  },
+  ctaButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    padding: "16px 32px",
+    borderRadius: 12,
+    border: "2px solid #E01E37",
+    background: "#E01E37",
+    color: "#FFFFFF",
+    textDecoration: "none",
+    fontSize: 16,
+    fontWeight: 800,
+    fontFamily: "APERCU, sans-serif",
+    transition: "all 0.3s ease",
+    cursor: "pointer",
+  },
+};

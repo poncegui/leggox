@@ -6,10 +6,41 @@
   letter-spacing: -5px;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .elemento-con-texto {
   width: 400px;
   height: 3px;
-  background-color: lightblue;
+  background-color: #e01e37;
   text-align: start;
   line-height: 100px;
   overflow: hidden;
@@ -45,7 +76,7 @@
 .ActoContainerBlue {
   width: 200px;
   height: 100px;
-  background-color: lightblue;
+  background-color: #e01e37;
   text-align: center;
   line-height: 100px;
   overflow: hidden;

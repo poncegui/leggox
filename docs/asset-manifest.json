@@ -1,15 +1,45 @@
 {
   "files": {
-    "main.css": "./static/css/main.7d0b36a5.css",
-    "main.js": "./static/js/main.dfcdb53e.js",
+    "main.css": "./static/css/main.12fea087.css",
+    "main.js": "./static/js/main.fec36b2b.js",
+    "static/media/seat-124-biarbol.png": "./static/media/seat-124-biarbol.9f3a3e731d3451c849c1.png",
+    "static/media/seat-bocanegra.png": "./static/media/seat-bocanegra.309cadec2f2c168254f2.png",
+    "static/media/seat-131-biarbol.png": "./static/media/seat-131-biarbol.074ab81771be0cd41be5.png",
+    "static/media/otros.png": "./static/media/otros.20ae50638b52a4727609.png",
+    "static/media/seat-128.png": "./static/media/seat-128.fb0cdb1eabdb479c078d.png",
+    "static/media/seat-ranchera.png": "./static/media/seat-ranchera.19ef29d02157d4e75a09.png",
+    "static/media/seat-panda.png": "./static/media/seat-panda.d10ff74a9f485c31289e.png",
+    "static/media/seat-marbella.png": "./static/media/seat-marbella.b753d930892c62133472.png",
+    "static/media/croquis-manguito-motor.png": "./static/media/croquis-manguito-motor.117ea6e22c6307f84957.png",
+    "static/media/seat-131.png": "./static/media/seat-131.846c1b37baad8a8d9c39.png",
+    "static/media/seat-600.png": "./static/media/seat-600.19e97c37d44d30d3ea56.png",
+    "static/media/radiador-aluminio-02.png": "./static/media/radiador-aluminio-02.d2fb5c79e6d44256097b.png",
+    "static/media/radiador-aluminio-seat-127-fura-cl-1010.jpg": "./static/media/radiador-aluminio-seat-127-fura-cl-1010.b419f307c5e31613a3be.jpg",
+    "static/media/manguito-silicona-radiador-superior-1430-potenciado.jpg": "./static/media/manguito-silicona-radiador-superior-1430-potenciado.c751bd9c623e45c9140f.jpg",
+    "static/media/mercagarage-logo.jpg": "./static/media/mercagarage-logo.f099355d7c6db9d3132f.jpg",
     "static/media/AnonymousPro-Regular.ttf": "./static/media/AnonymousPro-Regular.e7c1fd363699a9483f8f.ttf",
+    "static/media/radiador-seat-1430-mono-árbol-en-aluminio-doble-núcleo.jpg": "./static/media/radiador-seat-1430-mono-árbol-en-aluminio-doble-núcleo.3943bf257eaa3fe776f0.jpg",
+    "static/media/radiador-aluminio-seat-127-fura-cl-1010-02.jpg": "./static/media/radiador-aluminio-seat-127-fura-cl-1010-02.3f44428356b2de3e5ccb.jpg",
+    "static/media/logo-nuevo-leggox.png": "./static/media/logo-nuevo-leggox.dc77557110e43c9b7d2e.png",
+    "static/media/kit-manguitos-silicona-seat-600.jpg": "./static/media/kit-manguitos-silicona-seat-600.924e3f43e5a0547259d2.jpg",
+    "static/media/manguito-silicona-calefaccion-de-motor-a-radiador-seat-127.jpg": "./static/media/manguito-silicona-calefaccion-de-motor-a-radiador-seat-127.d9e3b8475a4619aa6a94.jpg",
+    "static/media/kit-radiador-aluminio-doble-nucleo-seat-124.jpg": "./static/media/kit-radiador-aluminio-doble-nucleo-seat-124.5884d5ebe90e17babcc3.jpg",
+    "static/media/manguito-gases-seat-1241430-biarbol-doble-medida.jpg": "./static/media/manguito-gases-seat-1241430-biarbol-doble-medida.a58974c2f26d23840900.jpg",
     "static/media/Apercu-Regular.otf": "./static/media/Apercu-Regular.83b693d3141cb9dd1538.otf",
+    "static/media/kit-manguitos-silicona-seat-127.jpg": "./static/media/kit-manguitos-silicona-seat-127.d72bbc98e9be506ffea8.jpg",
+    "static/media/manguito-silicona-de-bomba-de-agua-a-tubo-seat-127-panda.jpg": "./static/media/manguito-silicona-de-bomba-de-agua-a-tubo-seat-127-panda.abda3d147102b4e515cc.jpg",
+    "static/media/radiador-aluminio-600.jpg": "./static/media/radiador-aluminio-600.b3e1dc89d0e53c84ca66.jpg",
+    "static/media/manguito-entrada-agua-calefactor-seat-1430-1600.jpg": "./static/media/manguito-entrada-agua-calefactor-seat-1430-1600.e90273d90bbace24a126.jpg",
+    "static/media/manguito-de-calefacción-seat-panda-35-45-xo04412272.jpg": "./static/media/manguito-de-calefacción-seat-panda-35-45-xo04412272.b79da3e712fb91601563.jpg",
+    "static/media/manguito-silicona-respiradero-gases-de-bloque-motor-seat.jpg": "./static/media/manguito-silicona-respiradero-gases-de-bloque-motor-seat.b8a64b780def15206b4d.jpg",
+    "static/media/radiador-aluminio-seat-124-sport-doble-núcleo.jpg": "./static/media/radiador-aluminio-seat-124-sport-doble-núcleo.d5485292357528a14708.jpg",
+    "static/media/radiador-aluminio-doble-nucleo-fl-bi-arbol.jpg": "./static/media/radiador-aluminio-doble-nucleo-fl-bi-arbol.ab149b5b835776b08565.jpg",
     "index.html": "./index.html",
-    "main.7d0b36a5.css.map": "./static/css/main.7d0b36a5.css.map",
-    "main.dfcdb53e.js.map": "./static/js/main.dfcdb53e.js.map"
+    "main.12fea087.css.map": "./static/css/main.12fea087.css.map",
+    "main.fec36b2b.js.map": "./static/js/main.fec36b2b.js.map"
   },
   "entrypoints": [
-    "static/css/main.7d0b36a5.css",
-    "static/js/main.dfcdb53e.js"
+    "static/css/main.12fea087.css",
+    "static/js/main.fec36b2b.js"
   ]
 }
