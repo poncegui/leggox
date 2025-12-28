@@ -756,8 +756,10 @@ export default function ProductShowcase() {
             background: 'rgba(0,0,0,0.55)',
             display: 'grid',
             placeItems: 'center',
-            padding: 16,
+            padding: isMobile ? 0 : 16,
             zIndex: 9999,
+            height: '100vh',
+            overflowY: 'auto',
           }}
         >
           <div
@@ -765,12 +767,17 @@ export default function ProductShowcase() {
             style={{
               width: isMobile || isTablet ? '100vw' : 'min(920px, 96vw)',
               maxWidth: isMobile || isTablet ? '100vw' : '920px',
+              height: isMobile ? '100vh' : 'auto',
+              maxHeight: isMobile ? '100vh' : '90vh',
               background: '#FFFFFF',
               borderRadius: 18,
               border: '1px solid rgba(0,0,0,0.10)',
               boxShadow: '0 18px 60px rgba(0,0,0,0.25)',
-              overflow: 'hidden',
+              overflow: 'auto',
               margin: isMobile || isTablet ? 0 : undefined,
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             {/* Header modal */}
@@ -831,10 +838,15 @@ export default function ProductShowcase() {
                   border: '1px solid rgba(0,0,0,0.12)',
                   background: '#FFFFFF',
                   borderRadius: 12,
-                  padding: '10px 12px',
+                  padding: isMobile ? '14px 16px' : '10px 12px',
                   cursor: 'pointer',
                   fontWeight: 900,
                   fontFamily: 'ui-monospace, monospace',
+                  fontSize: isMobile ? 22 : 18,
+                  position: isMobile ? 'absolute' : 'static',
+                  top: isMobile ? 10 : undefined,
+                  right: isMobile ? 10 : undefined,
+                  zIndex: 10,
                 }}
               >
                 ✕

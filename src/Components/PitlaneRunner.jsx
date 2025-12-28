@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 /** ---------------- CONFIG ---------------- */
 const LANES = 3;
@@ -13,17 +13,17 @@ const RAMP_SECONDS = 12; // segundos para llegar al ritmo "normal"
 
 /** ---------------- THEME TOKENS ---------------- */
 const COLORS = {
-  bg: "#0B0B0B",
-  panel: "rgba(255,255,255,0.06)",
-  panel2: "rgba(255,255,255,0.04)",
-  border: "rgba(255,255,255,0.14)",
-  borderSoft: "rgba(255,255,255,0.10)",
-  white: "#FFFFFF",
-  white70: "rgba(255,255,255,0.70)",
-  white55: "rgba(255,255,255,0.55)",
-  red: "#E01E37",
-  green: "#2BD576",
-  amber: "#FFB020",
+  bg: '#0B0B0B',
+  panel: 'rgba(255,255,255,0.06)',
+  panel2: 'rgba(255,255,255,0.04)',
+  border: 'rgba(255,255,255,0.14)',
+  borderSoft: 'rgba(255,255,255,0.10)',
+  white: '#FFFFFF',
+  white70: 'rgba(255,255,255,0.70)',
+  white55: 'rgba(255,255,255,0.55)',
+  red: '#E01E37',
+  green: '#2BD576',
+  amber: '#FFB020',
 };
 
 function clamp(n, min, max) {
@@ -40,7 +40,7 @@ function pickLane(exceptLane = null) {
   return lane;
 }
 function formatScore(n) {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 // easing suave
 function smoothstep(t) {
@@ -48,17 +48,17 @@ function smoothstep(t) {
 }
 
 export default function PitlaneRunner({
-  title = "LEGGOX Race",
-  subtitle = "Esquiva conos, recoge piezas y bate tu récord",
+  title = 'LEGGOX Race',
+  subtitle = 'Esquiva conos, recoge piezas y bate tu récord',
 }) {
   /** ---------------- Responsive width (SSR safe) ---------------- */
   const [width, setWidth] = useState(1024);
   useEffect(() => {
-    const w = typeof window !== "undefined" ? window.innerWidth : 1024;
+    const w = typeof window !== 'undefined' ? window.innerWidth : 1024;
     setWidth(w);
     const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize, { passive: true });
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   const isMobile = width < 720;
 
@@ -133,15 +133,15 @@ export default function PitlaneRunner({
 
   function togglePause() {
     if (!running) return;
-    setPaused((p) => !p);
+    setPaused(p => !p);
   }
   function moveLeft() {
     if (!running || paused || gameOver) return;
-    setLane((l) => clamp(l - 1, 0, LANES - 1));
+    setLane(l => clamp(l - 1, 0, LANES - 1));
   }
   function moveRight() {
     if (!running || paused || gameOver) return;
-    setLane((l) => clamp(l + 1, 0, LANES - 1));
+    setLane(l => clamp(l + 1, 0, LANES - 1));
   }
 
   /** ---------------- Tick loop (spawn consistent) ---------------- */
@@ -152,17 +152,17 @@ export default function PitlaneRunner({
     intervalRef.current = setInterval(() => {
       if (!runningRef.current || pausedRef.current) return;
 
-      setTick((tPrev) => {
+      setTick(tPrev => {
         const t = tPrev + 1;
 
-        setObjects((prev) => {
+        setObjects(prev => {
           const moved = prev
-            .map((o) => ({ ...o, y: o.y + speed }))
-            .filter((o) => o.y < TRACK.trackHeight + 80);
+            .map(o => ({ ...o, y: o.y + speed }))
+            .filter(o => o.y < TRACK.trackHeight + 80);
 
           const shouldSpawn = t % SPAWN_EVERY_TICKS === 0;
           if (shouldSpawn) {
-            const kind = Math.random() < PICKUP_CHANCE ? "pickup" : "obstacle";
+            const kind = Math.random() < PICKUP_CHANCE ? 'pickup' : 'obstacle';
             const laneSpawn = pickLane();
             const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
             moved.unshift({ id, lane: laneSpawn, y: -60, kind });
@@ -170,7 +170,7 @@ export default function PitlaneRunner({
           return moved;
         });
 
-        setScore((s) => s + 1);
+        setScore(s => s + 1);
         return t;
       });
     }, TICK_MS);
@@ -185,7 +185,7 @@ export default function PitlaneRunner({
     if (!running || paused || gameOver) return;
 
     const carY = TRACK.trackHeight - (isMobile ? 108 : 118);
-    const hit = objects.find((o) => {
+    const hit = objects.find(o => {
       if (o.lane !== lane) return false;
       const dy = Math.abs(o.y - carY);
       return dy < (isMobile ? 32 : 34);
@@ -193,14 +193,14 @@ export default function PitlaneRunner({
 
     if (!hit) return;
 
-    if (hit.kind === "pickup") {
-      setPicked((p) => p + 1);
-      setScore((s) => s + 25);
-      setObjects((prev) => prev.filter((o) => o.id !== hit.id));
+    if (hit.kind === 'pickup') {
+      setPicked(p => p + 1);
+      setScore(s => s + 25);
+      setObjects(prev => prev.filter(o => o.id !== hit.id));
       return;
     }
 
-    setBest((b) => Math.max(b, score));
+    setBest(b => Math.max(b, score));
     stopGame();
   }, [
     objects,
@@ -215,33 +215,66 @@ export default function PitlaneRunner({
 
   /** ---------------- Keyboard (web) ---------------- */
   useEffect(() => {
-    const onKeyDown = (e) => {
-      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") moveLeft();
-      if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") moveRight();
+    const onKeyDown = e => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLeft();
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight();
 
-      if (e.key === " " || e.key === "Spacebar") {
+      if (e.key === ' ' || e.key === 'Spacebar') {
         e.preventDefault?.();
         if (!running) return;
-        setPaused((p) => !p);
+        setPaused(p => !p);
       }
 
-      if ((e.key === "Enter" || e.key === "Return") && !running) resetGame();
+      if ((e.key === 'Enter' || e.key === 'Return') && !running) resetGame();
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [running, paused, gameOver]);
+
+  /** ---------------- Swipe touch (mobile) ---------------- */
+  // Para swipe: guardamos posición inicial y final del toque
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+
+  // Detectar swipe en móvil
+  function handleTouchStart(e) {
+    if (!isMobile) return;
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchEndX.current = null;
+  }
+
+  function handleTouchMove(e) {
+    if (!isMobile) return;
+    const touch = e.touches[0];
+    touchEndX.current = touch.clientX;
+  }
+
+  function handleTouchEnd() {
+    if (!isMobile || touchStartX.current === null || touchEndX.current === null)
+      return;
+    const dx = touchEndX.current - touchStartX.current;
+    const threshold = 40; // píxeles mínimos para considerar swipe
+    if (dx > threshold) {
+      moveRight();
+    } else if (dx < -threshold) {
+      moveLeft();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }
 
   /** ---------------- UI helpers ---------------- */
   const statusText = useMemo(() => {
-    if (!running && !gameOver) return "Pulsa “Empezar”";
-    if (paused) return "Pausa";
-    if (gameOver) return "¡Golpe! Fin de carrera";
-    return "En carrera";
+    if (!running && !gameOver) return 'Pulsa “Empezar”';
+    if (paused) return 'Pausa';
+    if (gameOver) return '¡Golpe! Fin de carrera';
+    return 'En carrera';
   }, [running, paused, gameOver]);
 
   const trackPadding = 10;
-  const laneX = (l) =>
+  const laneX = l =>
     trackPadding +
     l * TRACK.laneWidth +
     Math.floor((TRACK.laneWidth - TRACK.objW) / 2);
@@ -263,43 +296,43 @@ export default function PitlaneRunner({
         padding: pagePad,
         color: COLORS.white,
         fontFamily:
-          "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+          'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif',
         minHeight: 480,
         borderRadius: 18,
-        margin: isMobile ? "18px auto" : "32px auto",
+        margin: isMobile ? '18px auto' : '32px auto',
         maxWidth: isMobile ? '100vw' : 620,
         width: isMobile ? '100vw' : undefined,
         overflowX: isMobile ? 'hidden' : undefined,
-        boxShadow: "0 18px 60px rgba(0,0,0,0.28)",
+        boxShadow: '0 18px 60px rgba(0,0,0,0.28)',
         border: `1px solid ${COLORS.borderSoft}`,
       },
 
       headerRow: {
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
         gap: 12,
         marginBottom: 12,
-        flexWrap: "wrap",
+        flexWrap: 'wrap',
       },
       titleBlock: { minWidth: 220 },
       kicker: {
         fontSize: isMobile ? 18 : 20,
         fontWeight: 900,
         letterSpacing: 0.8,
-        lineHeight: "24px",
+        lineHeight: '24px',
       },
       subtitle: {
         color: COLORS.white70,
         fontSize: isMobile ? 12.5 : 13,
-        lineHeight: "18px",
+        lineHeight: '18px',
         marginTop: 4,
         maxWidth: 520,
       },
 
       hud: {
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, minmax(0, 1fr))",
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, minmax(0, 1fr))',
         gap: isMobile ? 10 : 12,
         marginTop: 10,
         marginBottom: 14,
@@ -308,124 +341,124 @@ export default function PitlaneRunner({
         background: COLORS.panel,
         border: `1px solid ${COLORS.borderSoft}`,
         borderRadius: 14,
-        padding: isMobile ? "10px 10px" : "10px 12px",
+        padding: isMobile ? '10px 10px' : '10px 12px',
         minWidth: 0,
-        boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
-        backdropFilter: "blur(10px)",
+        boxShadow: '0 10px 24px rgba(0,0,0,0.18)',
+        backdropFilter: 'blur(10px)',
       },
       hudLabel: {
         color: COLORS.white55,
         fontSize: 11,
         letterSpacing: 1.1,
         fontWeight: 800,
-        textTransform: "uppercase",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+        textTransform: 'uppercase',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       },
       hudValue: {
         marginTop: 6,
-        display: "flex",
-        alignItems: "baseline",
-        justifyContent: "space-between",
+        display: 'flex',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
         gap: 10,
       },
       hudMain: {
         fontSize: isMobile ? 16 : 17,
         fontWeight: 900,
         letterSpacing: 0.2,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       },
       hudSub: {
         color: COLORS.white55,
         fontSize: 11,
         fontWeight: 700,
-        whiteSpace: "nowrap",
+        whiteSpace: 'nowrap',
       },
 
       trackWrap: { padding: isMobile ? 6 : 8 },
       track: {
-        position: "relative",
-        margin: "0 auto",
+        position: 'relative',
+        margin: '0 auto',
         marginBottom: 14,
-        overflow: "hidden",
+        overflow: 'hidden',
         borderRadius: 18,
         border: `1px solid ${COLORS.border}`,
         background: `linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))`,
-        boxShadow: "0 16px 40px rgba(0,0,0,0.25)",
+        boxShadow: '0 16px 40px rgba(0,0,0,0.25)',
       },
-      laneLines: { position: "absolute", inset: 0, pointerEvents: "none" },
+      laneLines: { position: 'absolute', inset: 0, pointerEvents: 'none' },
 
       obj: {
-        position: "absolute",
+        position: 'absolute',
         borderRadius: 14,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        border: "1px solid",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid',
         fontSize: 20,
-        boxShadow: "0 10px 18px rgba(0,0,0,0.22)",
-        backdropFilter: "blur(8px)",
+        boxShadow: '0 10px 18px rgba(0,0,0,0.22)',
+        backdropFilter: 'blur(8px)',
       },
       obstacle: {
-        background: "rgba(255,176,32,0.16)",
-        borderColor: "rgba(255,176,32,0.36)",
+        background: 'rgba(255,176,32,0.16)',
+        borderColor: 'rgba(255,176,32,0.36)',
       },
       pickup: {
-        background: "rgba(43,213,118,0.14)",
-        borderColor: "rgba(43,213,118,0.36)",
+        background: 'rgba(43,213,118,0.14)',
+        borderColor: 'rgba(43,213,118,0.36)',
       },
 
       car: {
-        position: "absolute",
+        position: 'absolute',
         borderRadius: 16,
-        background: "rgba(224,30,55,0.18)",
-        border: "1px solid rgba(224,30,55,0.38)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        background: 'rgba(224,30,55,0.18)',
+        border: '1px solid rgba(224,30,55,0.38)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         fontSize: 46,
-        boxShadow: "0 18px 30px rgba(0,0,0,0.30)",
-        backdropFilter: "blur(10px)",
-        transform: "translateZ(0)",
+        boxShadow: '0 18px 30px rgba(0,0,0,0.30)',
+        backdropFilter: 'blur(10px)',
+        transform: 'translateZ(0)',
         // Si quieres animación al cambiar de carril:
         // transition: "left 90ms ease-out",
       },
 
-      touchRow: { position: "absolute", inset: 0, display: "flex", zIndex: 2 },
+      touchRow: { position: 'absolute', inset: 0, display: 'flex', zIndex: 2 },
       touchHalf: {
         flex: 1,
-        cursor: "pointer",
-        background: "transparent",
-        border: "none",
-        outline: "none",
+        cursor: 'pointer',
+        background: 'transparent',
+        border: 'none',
+        outline: 'none',
       },
 
       overlay: {
-        position: "absolute",
+        position: 'absolute',
         inset: 0,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.22)",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0,0,0,0.22)',
         zIndex: 3,
         padding: 18,
-        textAlign: "center",
+        textAlign: 'center',
       },
       bigTitle: {
         fontSize: isMobile ? 34 : 40,
         fontWeight: 950,
         letterSpacing: 2,
-        lineHeight: "42px",
+        lineHeight: '42px',
       },
       centerHint: {
         marginTop: 10,
         color: COLORS.white70,
         fontSize: isMobile ? 16 : 18,
-        lineHeight: isMobile ? "22px" : "24px",
+        lineHeight: isMobile ? '22px' : '24px',
         fontWeight: 750,
         maxWidth: 520,
       },
@@ -433,55 +466,55 @@ export default function PitlaneRunner({
         marginTop: 8,
         color: COLORS.white55,
         fontSize: 12,
-        lineHeight: "16px",
+        lineHeight: '16px',
       },
 
       pauseOverlay: {
-        position: "absolute",
+        position: 'absolute',
         inset: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.30)",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0,0,0,0.30)',
         zIndex: 4,
       },
       pausePill: {
-        padding: "10px 14px",
+        padding: '10px 14px',
         borderRadius: 999,
         border: `1px solid ${COLORS.borderSoft}`,
-        background: "rgba(255,255,255,0.06)",
-        backdropFilter: "blur(10px)",
+        background: 'rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(10px)',
         fontWeight: 900,
         letterSpacing: 2,
       },
 
       buttons: {
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "1fr 120px",
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 120px',
         gap: 10,
         marginTop: 10,
       },
       btn: {
-        padding: "12px 14px",
+        padding: '12px 14px',
         borderRadius: 14,
         fontWeight: 900,
         fontSize: 14,
-        cursor: "pointer",
-        border: "1px solid transparent",
-        transition: "transform 120ms ease, filter 120ms ease",
+        cursor: 'pointer',
+        border: '1px solid transparent',
+        transition: 'transform 120ms ease, filter 120ms ease',
       },
       btnPrimary: {
         background: COLORS.red,
-        borderColor: "rgba(224,30,55,0.65)",
+        borderColor: 'rgba(224,30,55,0.65)',
         color: COLORS.white,
       },
       btnSecondary: {
-        background: "rgba(255,255,255,0.92)",
-        borderColor: "rgba(255,255,255,0.92)",
-        color: "#111",
+        background: 'rgba(255,255,255,0.92)',
+        borderColor: 'rgba(255,255,255,0.92)',
+        color: '#111',
       },
       btnGhost: {
-        background: "rgba(255,255,255,0.06)",
+        background: 'rgba(255,255,255,0.06)',
         borderColor: COLORS.border,
         color: COLORS.white70,
       },
@@ -490,8 +523,8 @@ export default function PitlaneRunner({
         marginTop: 12,
         color: COLORS.white55,
         fontSize: 12,
-        lineHeight: "16px",
-        textAlign: "center",
+        lineHeight: '16px',
+        textAlign: 'center',
         padding: 10,
         borderRadius: 14,
         border: `1px solid ${COLORS.borderSoft}`,
@@ -517,7 +550,7 @@ export default function PitlaneRunner({
           <div style={S.hudLabel}>Estado</div>
           <div style={S.hudValue}>
             <div style={S.hudMain}>{statusText}</div>
-            <div style={S.hudSub}>{paused ? "⏸" : running ? "▶" : "⏺"}</div>
+            <div style={S.hudSub}>{paused ? '⏸' : running ? '▶' : '⏺'}</div>
           </div>
         </div>
 
@@ -557,28 +590,28 @@ export default function PitlaneRunner({
         >
           {/* Lane lines */}
           <div style={S.laneLines} aria-hidden="true">
-            {[1, 2].map((i) => (
+            {[1, 2].map(i => (
               <div
                 key={i}
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   left: i * TRACK.laneWidth,
                   top: 0,
                   bottom: 0,
                   width: 1,
-                  background: "rgba(255,255,255,0.10)",
+                  background: 'rgba(255,255,255,0.10)',
                 }}
               />
             ))}
           </div>
 
           {/* Objects */}
-          {objects.map((o) => (
+          {objects.map(o => (
             <div
               key={o.id}
               style={{
                 ...S.obj,
-                ...(o.kind === "pickup" ? S.pickup : S.obstacle),
+                ...(o.kind === 'pickup' ? S.pickup : S.obstacle),
                 width: TRACK.objW,
                 height: TRACK.objH,
                 left: laneX(o.lane),
@@ -586,7 +619,7 @@ export default function PitlaneRunner({
               }}
             >
               <span aria-hidden="true">
-                {o.kind === "pickup" ? "⚙️" : "⛔"}
+                {o.kind === 'pickup' ? '⚙️' : '⛔'}
               </span>
             </div>
           ))}
@@ -607,30 +640,30 @@ export default function PitlaneRunner({
             </span>
           </div>
 
-          {/* Touch zones */}
-          <div style={S.touchRow}>
-            <button
-              style={S.touchHalf}
-              onClick={moveLeft}
-              aria-label="Mover a la izquierda"
-              tabIndex={-1}
+          {/* Swipe touch: solo en móvil, sin botones */}
+          {isMobile && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 2,
+                background: 'transparent',
+              }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              aria-label="Zona táctil para swipe"
             />
-            <button
-              style={S.touchHalf}
-              onClick={moveRight}
-              aria-label="Mover a la derecha"
-              tabIndex={-1}
-            />
-          </div>
+          )}
 
           {/* Overlays */}
           {!running && (
             <div style={S.overlay}>
-              <div style={S.bigTitle}>{gameOver ? "FIN" : "LISTO"}</div>
+              <div style={S.bigTitle}>{gameOver ? 'FIN' : 'LISTO'}</div>
               <div style={S.centerHint}>
                 {gameOver
-                  ? "Pulsa Reiniciar para intentarlo otra vez"
-                  : "Esquiva ⛔ y recoge ⚙️"}
+                  ? 'Pulsa Reiniciar para intentarlo otra vez'
+                  : 'Esquiva ⛔ y recoge ⚙️'}
               </div>
               <div style={S.centerHint2}>
                 Web: ← → para moverte · Espacio para pausar · Enter para empezar
@@ -651,35 +684,31 @@ export default function PitlaneRunner({
             <button
               onClick={resetGame}
               style={{ ...S.btn, ...S.btnPrimary }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = "scale(0.98)")
+              onMouseDown={e =>
+                (e.currentTarget.style.transform = 'scale(0.98)')
               }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
+              onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
             >
-              {gameOver ? "Reiniciar" : "Empezar"}
+              {gameOver ? 'Reiniciar' : 'Empezar'}
             </button>
           ) : (
             <button
               onClick={togglePause}
               style={{ ...S.btn, ...S.btnSecondary }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = "scale(0.98)")
+              onMouseDown={e =>
+                (e.currentTarget.style.transform = 'scale(0.98)')
               }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
+              onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
             >
-              {paused ? "Reanudar" : "Pausar"}
+              {paused ? 'Reanudar' : 'Pausar'}
             </button>
           )}
 
           <button
             onClick={() => {
-              setBest((b) => Math.max(b, score));
+              setBest(b => Math.max(b, score));
               setRunning(false);
               setPaused(false);
               setGameOver(false);
