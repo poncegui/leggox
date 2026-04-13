@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables (⚠️ IMPORTANTE: no subir credenciales)
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# Build outputs
+build/
+dist/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Temporal
+.cache/
+tmp/
+temp/
+
+# Database copia seguridad
+*.db-wal
+*.db-shm
+leggox.db.backup
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed 's/,$//')",
+      "Bash(cat)",
+      "Bash(node /tmp/check_ids.js)",
+      "WebFetch(domain:mercagarage.com)",
+      "Bash(curl -v 'https://mercagarage.com/module/motive/front?action=shopperPrices')",
+      "Bash(curl -s 'https://mercagarage.com/module/motive/front?action=shopperPrices')",
+      "Bash(curl -s -X POST 'https://mercagarage.com/module/motive/front?action=shopperPrices')",
+      "Bash(curl -s -X POST 'https://mercagarage.com/module/motive/front?action=shopperPrices' -H 'Content-Type: application/json' -d '{}')",
+      "Bash(curl -s -X POST 'https://mercagarage.com/module/motive/front?action=shopperPrices' -H 'Content-Type: application/json' -d '{\"ids\":[\"1788\",\"28405\",\"60858\"]}')",
+      "Bash(curl -s -X POST 'https://mercagarage.com/module/motive/front?action=shopperPrices' -H 'Content-Type: application/json' -d '[\"1788\",\"28405\",\"60858\",\"71178\",\"87803\"]')",
+      "Bash(node test-mercagarage.js)",
+      "Bash(npm install:*)",
+      "Bash(node test-database.js)",
+      "Bash(curl -s 'http://localhost:4000/api/products')",
+      "Bash(curl -s 'http://localhost:4000/health')",
+      "Bash(node index.js)"
+    ]
+  }
+}

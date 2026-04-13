@@ -1,0 +1,89 @@
+@font-face {
+  font-family: "APERCU";
+  src: url("../../Assets/Fonts/Apercu/Apercu-Regular.otf");
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: -5px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.elemento-con-texto {
+  width: 400px;
+  height: 3px;
+  background-color: #e01e37;
+  text-align: start;
+  line-height: 100px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  margin-bottom: 3%;
+}
+
+.elemento-con-texto:hover {
+  overflow: visible;
+}
+
+.elementosHover {
+  text-align: start;
+  line-height: 100px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.elementosHover:hover {
+  overflow: visible;
+}
+
+.ActoContainerBlue {
+  width: 200px;
+  height: 100px;
+  background-color: #e01e37;
+  text-align: center;
+  line-height: 100px;
+  overflow: hidden;
+  position: relative;
+  left: 15rem;
+}
+
+.ActoContainerBlue:hover {
+  overflow: visible;
+}

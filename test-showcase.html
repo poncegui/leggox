@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test ProductShowcase Data</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+    .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+    .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-success { background: #d4edda; color: #155724; }
+    .badge-warning { background: #fff3cd; color: #856404; }
+    button {
+      background: #E01E37;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #c01828;
+    }
+    pre {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test ProductShowcase Data</h1>
+
+  <div id="status" class="status info">
+    <strong>⏳ Conectando con la API...</strong>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    const API_BASE = 'http://localhost:4000';
+
+    async function testAPI() {
+      const statusDiv = document.getElementById('status');
+      const resultsDiv = document.getElementById('results');
+
+      try {
+        // Test 1: Obtener todos los productos
+        statusDiv.innerHTML = '<strong>📡 Obteniendo productos...</strong>';
+        const response = await fetch(`${API_BASE}/api/products`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const products = await response.json();
+
+        // Análisis
+        const manguitos = products.filter(p => p.type === 'manguito');
+        const radiadores = products.filter(p => p.type === 'radiador');
+        const featured = products.filter(p => p.featured);
+        const inStock = products.filter(p => p.inStock);
+
+        // Mostrar resultados
+        statusDiv.className = 'status success';
+        statusDiv.innerHTML = `
+          <strong>✅ API funcionando correctamente</strong><br>
+          Total de productos: ${products.length}
+        `;
+
+        resultsDiv.innerHTML = `
+          <div class="card">
+            <h2>📊 Resumen de Productos</h2>
+            <table>
+              <tr>
+                <th>Categoría</th>
+                <th>Cantidad</th>
+                <th>Estado</th>
+              </tr>
+              <tr>
+                <td>Total de productos</td>
+                <td><strong>${products.length}</strong></td>
+                <td><span class="badge badge-${products.length > 0 ? 'success' : 'warning'}">${products.length > 0 ? 'OK' : 'Vacío'}</span></td>
+              </tr>
+              <tr>
+                <td>Manguitos</td>
+                <td><strong>${manguitos.length}</strong></td>
+                <td><span class="badge badge-${manguitos.length > 0 ? 'success' : 'warning'}">${manguitos.length > 0 ? 'OK' : 'Vacío'}</span></td>
+              </tr>
+              <tr>
+                <td>Radiadores</td>
+                <td><strong>${radiadores.length}</strong></td>
+                <td><span class="badge badge-${radiadores.length > 0 ? 'success' : 'warning'}">${radiadores.length > 0 ? 'OK' : 'Vacío'}</span></td>
+              </tr>
+              <tr>
+                <td>Featured</td>
+                <td><strong>${featured.length}</strong></td>
+                <td><span class="badge badge-${featured.length > 0 ? 'success' : 'warning'}">${featured.length > 0 ? 'OK' : 'Vacío'}</span></td>
+              </tr>
+              <tr>
+                <td>En Stock</td>
+                <td><strong>${inStock.length}</strong></td>
+                <td><span class="badge badge-${inStock.length > 0 ? 'success' : 'warning'}">${inStock.length > 0 ? 'OK' : 'Vacío'}</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>🔍 Primeros 3 Manguitos</h2>
+            ${manguitos.length > 0 ? `
+              <table>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Tipo</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Featured</th>
+                </tr>
+                ${manguitos.slice(0, 3).map(p => `
+                  <tr>
+                    <td>${p.id}</td>
+                    <td>${p.title}</td>
+                    <td>${p.type}</td>
+                    <td>€${p.price}</td>
+                    <td><span class="badge badge-${p.inStock ? 'success' : 'warning'}">${p.inStock ? 'Sí' : 'No'}</span></td>
+                    <td><span class="badge badge-${p.featured ? 'success' : 'warning'}">${p.featured ? 'Sí' : 'No'}</span></td>
+                  </tr>
+                `).join('')}
+              </table>
+            ` : '<p>No hay manguitos</p>'}
+          </div>
+
+          <div class="card">
+            <h2>✅ Validación de Campos</h2>
+            <p>Verificando que los productos tienen todos los campos necesarios...</p>
+            ${validateProduct(products[0])}
+          </div>
+
+          <div class="card">
+            <h2>📄 Ejemplo de Producto Completo</h2>
+            <pre>${JSON.stringify(products[0], null, 2)}</pre>
+          </div>
+
+          <div class="card">
+            <button onclick="location.reload()">🔄 Actualizar</button>
+          </div>
+        `;
+
+      } catch (error) {
+        statusDiv.className = 'status error';
+        statusDiv.innerHTML = `
+          <strong>❌ Error al conectar con la API</strong><br>
+          ${error.message}<br><br>
+          <small>Asegúrate de que el servidor esté corriendo: <code>cd server && node index.js</code></small>
+        `;
+        resultsDiv.innerHTML = '';
+      }
+    }
+
+    function validateProduct(product) {
+      if (!product) return '<p class="error">❌ No hay productos para validar</p>';
+
+      const requiredFields = [
+        'id', 'title', 'type', 'price', 'inStock', 'featured',
+        'vehicles', 'tags', 'buyUrl', 'imageSrc'
+      ];
+
+      const missing = requiredFields.filter(field => !(field in product));
+      const present = requiredFields.filter(field => field in product);
+
+      return `
+        <table>
+          <tr>
+            <th>Campo</th>
+            <th>Estado</th>
+            <th>Valor</th>
+          </tr>
+          ${requiredFields.map(field => {
+            const exists = field in product;
+            const value = exists ? JSON.stringify(product[field]) : 'undefined';
+            return `
+              <tr>
+                <td><code>${field}</code></td>
+                <td><span class="badge badge-${exists ? 'success' : 'warning'}">${exists ? '✓' : '✗'}</span></td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${value}</td>
+              </tr>
+            `;
+          }).join('')}
+        </table>
+        <p style="margin-top: 15px;">
+          <strong>Resumen:</strong> ${present.length}/${requiredFields.length} campos presentes
+          ${missing.length > 0 ? `<br><span style="color: #856404;">⚠️ Faltan: ${missing.join(', ')}</span>` : ''}
+        </p>
+      `;
+    }
+
+    // Ejecutar al cargar
+    testAPI();
+  </script>
+</body>
+</html>

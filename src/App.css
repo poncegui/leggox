@@ -1,0 +1,33 @@
+/* Reset y estilos globales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Body y HTML */
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #000000;
+  color: #ffffff;
+  scroll-behavior: smooth;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Fuente ANONYMOUS */
+@font-face {
+  font-family: "ANONYMOUS";
+  src: url("./Assets/Fonts/Anonymous/AnonymousPro-Regular.ttf");
+  font-style: normal;
+  font-weight: normal;
+}
