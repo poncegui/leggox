@@ -35,10 +35,36 @@ function initDatabase() {
       category TEXT,
       brand TEXT,
       model TEXT,
+      technical TEXT,
       mercagarage_synced INTEGER DEFAULT 0,
       last_sync_at TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Tabla de vehículos (normalizada)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS vehicles (
+      id TEXT PRIMARY KEY,
+      brand TEXT NOT NULL,
+      model TEXT NOT NULL,
+      full_name TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(brand, model)
+    )
+  `);
+
+  // Tabla de relación productos-vehículos (muchos a muchos)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS product_vehicles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id TEXT NOT NULL,
+      vehicle_id TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+      FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE,
+      UNIQUE(product_id, vehicle_id)
     )
   `);
 
@@ -97,6 +123,10 @@ function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand);
     CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
     CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
+    CREATE INDEX IF NOT EXISTS idx_vehicles_brand ON vehicles(brand);
+    CREATE INDEX IF NOT EXISTS idx_vehicles_model ON vehicles(model);
+    CREATE INDEX IF NOT EXISTS idx_product_vehicles_product ON product_vehicles(product_id);
+    CREATE INDEX IF NOT EXISTS idx_product_vehicles_vehicle ON product_vehicles(vehicle_id);
   `);
 
   console.log('✅ Base de datos inicializada');
@@ -154,12 +184,12 @@ export function upsertProduct(product) {
     INSERT INTO products (
       id, reference, title, subtitle, description,
       price, original_price, currency, has_discount, price_without_tax,
-      stock, minimum_quantity, image_url, category, brand, model,
+      stock, minimum_quantity, image_url, images, category, brand, model, technical,
       mercagarage_synced, last_sync_at, updated_at
     ) VALUES (
       @id, @reference, @title, @subtitle, @description,
       @price, @originalPrice, @currency, @hasDiscount, @priceWithoutTax,
-      @stock, @minimumQuantity, @imageUrl, @category, @brand, @model,
+      @stock, @minimumQuantity, @imageUrl, @images, @category, @brand, @model, @technical,
       @mercagarageSynced, @lastSyncAt, CURRENT_TIMESTAMP
     )
     ON CONFLICT(id) DO UPDATE SET
@@ -173,9 +203,11 @@ export function upsertProduct(product) {
       stock = @stock,
       minimum_quantity = @minimumQuantity,
       image_url = @imageUrl,
+      images = @images,
       category = @category,
       brand = @brand,
       model = @model,
+      technical = @technical,
       mercagarage_synced = @mercagarageSynced,
       last_sync_at = @lastSyncAt,
       updated_at = CURRENT_TIMESTAMP
@@ -340,6 +372,105 @@ export function getAllOrders(limit = 100) {
 }
 
 // ============================================================================
+// FUNCIONES DE VEHÍCULOS
+// ============================================================================
+
+/**
+ * Inserta o obtiene un vehículo
+ */
+export function upsertVehicle(vehicleData) {
+  const stmt = db.prepare(`
+    INSERT INTO vehicles (id, brand, model, full_name)
+    VALUES (@id, @brand, @model, @fullName)
+    ON CONFLICT(id) DO UPDATE SET
+      full_name = @fullName
+  `);
+
+  return stmt.run(vehicleData);
+}
+
+/**
+ * Asocia un producto con un vehículo
+ */
+export function linkProductToVehicle(productId, vehicleId) {
+  const stmt = db.prepare(`
+    INSERT OR IGNORE INTO product_vehicles (product_id, vehicle_id)
+    VALUES (?, ?)
+  `);
+
+  return stmt.run(productId, vehicleId);
+}
+
+/**
+ * Limpia las asociaciones de vehículos de un producto
+ */
+export function clearProductVehicles(productId) {
+  const stmt = db.prepare('DELETE FROM product_vehicles WHERE product_id = ?');
+  return stmt.run(productId);
+}
+
+/**
+ * Obtiene todos los vehículos únicos
+ */
+export function getAllVehicles() {
+  const stmt = db.prepare(`
+    SELECT DISTINCT v.*
+    FROM vehicles v
+    INNER JOIN product_vehicles pv ON v.id = pv.vehicle_id
+    INNER JOIN products p ON pv.product_id = p.id
+    WHERE p.category IN ('manguito', 'radiador')
+    ORDER BY v.brand, v.model
+  `);
+  return stmt.all();
+}
+
+/**
+ * Obtiene los vehículos de un producto específico
+ */
+export function getProductVehicles(productId) {
+  const stmt = db.prepare(`
+    SELECT v.*
+    FROM vehicles v
+    INNER JOIN product_vehicles pv ON v.id = pv.vehicle_id
+    WHERE pv.product_id = ?
+    ORDER BY v.brand, v.model
+  `);
+  return stmt.all(productId);
+}
+
+/**
+ * Obtiene los productos que son compatibles con un vehículo
+ */
+export function getProductsByVehicle(vehicleId) {
+  const stmt = db.prepare(`
+    SELECT p.*
+    FROM products p
+    INNER JOIN product_vehicles pv ON p.id = pv.product_id
+    WHERE pv.vehicle_id = ?
+    ORDER BY p.title
+  `);
+  return stmt.all(vehicleId);
+}
+
+/**
+ * Busca productos por múltiples vehículos
+ */
+export function searchProductsByVehicles(vehicleIds) {
+  if (!vehicleIds || vehicleIds.length === 0) return [];
+
+  const placeholders = vehicleIds.map(() => '?').join(',');
+  const stmt = db.prepare(`
+    SELECT DISTINCT p.*
+    FROM products p
+    INNER JOIN product_vehicles pv ON p.id = pv.product_id
+    WHERE pv.vehicle_id IN (${placeholders})
+    ORDER BY p.title
+  `);
+
+  return stmt.all(...vehicleIds);
+}
+
+// ============================================================================
 // ESTADÍSTICAS
 // ============================================================================
 
@@ -349,6 +480,7 @@ export function getStats() {
   const totalOrders = db.prepare('SELECT COUNT(*) as count FROM orders').get().count;
   const completedOrders = db.prepare("SELECT COUNT(*) as count FROM orders WHERE status = 'completed'").get().count;
   const totalRevenue = db.prepare("SELECT SUM(total) as sum FROM orders WHERE status = 'completed'").get().sum || 0;
+  const totalVehicles = db.prepare('SELECT COUNT(*) as count FROM vehicles').get().count;
 
   return {
     products: {
@@ -363,6 +495,9 @@ export function getStats() {
     },
     revenue: {
       total: totalRevenue,
+    },
+    vehicles: {
+      total: totalVehicles,
     },
   };
 }

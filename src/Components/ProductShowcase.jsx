@@ -3,6 +3,81 @@ import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
 import PayPalCheckout from './PayPalCheckout';
 
+// Función para limpiar el título de menciones de vehículos
+function cleanProductTitle(title) {
+  if (!title) return title;
+
+  let cleaned = title;
+
+  // Paso 1: Remover patrones específicos de SEAT con modelos
+  const seatPatterns = [
+    /\bSEAT\s+\d{3,4}(?:\s*[\/,y]\s*\d{3,4})*/gi,
+    /\bSEAT\s+(?:Panda|PANDA|Marbella|MARBELLA|Fura|FURA|Sport|SPORT)\b/gi,
+    /\bSEAT\s+\d{3,4}\s+Sport\b/gi,
+    /\bSEAT\s+FL(?:\/\d{3,4})?\b/gi,
+  ];
+
+  seatPatterns.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 2: Remover nombres de modelos standalone
+  const modelNames = [
+    /\bBocanegra\b/gi,
+    /\bBOCANEGRA\b/g,
+    /\bMirafiori\b/gi,
+    /\bSupermirafiori\b/gi,
+    /\bSport\s+(?=-)/gi,
+    /\bSPORT\s+(?=-)/g,
+    /\bSport\b(?!\s+(-|Doble))/gi,
+    /\bSPORT\b(?!\s+(-|Doble))/g,
+    /\bFL\b/g,
+  ];
+
+  modelNames.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 3: Remover números de modelos standalone con separadores
+  const numberPatterns = [
+    /\b\d{3,4}\s*[\/,]\s*\d{3,4}(?:\s*[\/,]\s*\d{3,4})*/g,
+    /\b\d{3,4}\s+y\s+\d{3,4}\b/g,
+    /\s+(?:Sport|SPORT|Especial|ESPECIAL|Normal|NORMAL)\s*$/gi,
+  ];
+
+  numberPatterns.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 4: Remover texto común que aparece con vehículos
+  const commonPhrases = [
+    /\s+para\s+SEAT\s+.*$/gi,
+    /\s+en\s+SEAT\s+.*$/gi,
+    /\s+compatible\s+con\s+SEAT\s+.*$/gi,
+    /\s+válido\s+para\s+SEAT\s+.*$/gi,
+  ];
+
+  commonPhrases.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 5: Limpiar conectores huérfanos y espacios múltiples
+  cleaned = cleaned
+    .replace(/\s*[,\/y]\s*$/gi, '')
+    .replace(/^\s*[,\/y]\s*/gi, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*-\s*$/, '')
+    .replace(/\(\s*\)/g, '')
+    .trim();
+
+  // Paso 6: Validación
+  if (cleaned.length < 10) {
+    return title;
+  }
+
+  return cleaned;
+}
+
 // ✅ Icono SVG de Zoom
 function IconZoomIn({ size = 16, color = 'currentColor' }) {
   return (
@@ -935,7 +1010,7 @@ export default function ProductShowcase() {
                               : 'MODELO')}
                       </span>
                     </div>
-                    <h4 style={styles.cardName}>{p.title}</h4>
+                    <h4 style={styles.cardName}>{cleanProductTitle(p.title)}</h4>
                     {(p.variant || p.subtitle) && (
                       <p style={styles.cardSubtitle}>
                         {p.subtitle || p.variant}

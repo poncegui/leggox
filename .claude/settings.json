@@ -98,7 +98,26 @@
       "Bash(sqlite3 server/leggox.db \"DELETE FROM products WHERE mercagarage_synced = 0; SELECT 'Eliminados: ' || changes\\(\\) || ' productos';\")",
       "Bash(sqlite3 server/leggox.db \"SELECT COUNT\\(*\\) as total_productos, SUM\\(CASE WHEN mercagarage_synced = 1 THEN 1 ELSE 0 END\\) as sincronizados, SUM\\(CASE WHEN mercagarage_synced = 0 THEN 1 ELSE 0 END\\) as manuales FROM products\")",
       "Bash(sqlite3 server/leggox.db \"SELECT COUNT\\(*\\) as total_ofertas FROM products WHERE has_discount = 1 OR original_price IS NOT NULL\")",
-      "Bash(awk '/^  return \\\\\\($/,/^  \\\\\\);$/' /Users/marta/Desktop/leggox/src/Components/BuscadorPiezas.jsx)"
+      "Bash(awk '/^  return \\\\\\($/,/^  \\\\\\);$/' /Users/marta/Desktop/leggox/src/Components/BuscadorPiezas.jsx)",
+      "Bash(node vehicle-parser.js)",
+      "Bash(node migrate-vehicles.js)",
+      "Bash(node test-vehicle-system.js)",
+      "Bash(node technical-parser.js)",
+      "Bash(node migrate-technical.js)",
+      "Bash(node /Users/marta/Desktop/leggox/server/migrate-technical.js)",
+      "Bash(node title-cleaner.js)",
+      "Bash(node migrate-add-images.js)",
+      "Bash(node sync-motive.js)",
+      "Bash(sqlite3 leggox.db \"SELECT id, title, image_url, images, technical, description FROM products WHERE title LIKE '%Radiador Aluminio%' LIMIT 1;\")",
+      "Bash(curl -s http://localhost:3001/api/products)",
+      "Bash(npm start:*)",
+      "Bash(sqlite3 leggox.db \"SELECT id, brand, model, full_name, COUNT\\(*\\) as count FROM vehicles GROUP BY id HAVING count > 1;\")",
+      "Bash(sqlite3 leggox.db \"SELECT full_name, COUNT\\(*\\) as count FROM vehicles GROUP BY full_name ORDER BY count DESC, full_name;\")",
+      "Bash(curl -s http://localhost:3001/api/vehicles)",
+      "Bash(sqlite3 leggox.db \"SELECT v.id, v.full_name, COUNT\\(DISTINCT pv.product_id\\) as num_productos FROM vehicles v LEFT JOIN product_vehicles pv ON v.id = pv.vehicle_id GROUP BY v.id ORDER BY v.full_name;\")"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
     ]
   }
 }

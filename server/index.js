@@ -13,6 +13,10 @@ import {
   getOrderById,
   getAllOrders,
   getStats,
+  getAllVehicles,
+  getProductVehicles,
+  getProductsByVehicle,
+  searchProductsByVehicles,
 } from "./database.js";
 import {
   transformProductToFrontend,
@@ -398,6 +402,73 @@ app.get("/api/stats", async (req, res) => {
     return res.json(stats);
   } catch (e) {
     console.error("Error fetching stats:", e);
+    return res.status(500).json({ error: e.message || "Server error" });
+  }
+});
+
+// ============================================================================
+// ENDPOINTS DE VEHÍCULOS
+// ============================================================================
+
+// ✅ Obtener todos los vehículos únicos
+app.get("/api/vehicles", async (req, res) => {
+  try {
+    const vehicles = getAllVehicles();
+    return res.json(vehicles);
+  } catch (e) {
+    console.error("Error fetching vehicles:", e);
+    return res.status(500).json({ error: e.message || "Server error" });
+  }
+});
+
+// ✅ Obtener vehículos compatibles con un producto
+app.get("/api/products/:id/vehicles", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vehicles = getProductVehicles(id);
+    return res.json(vehicles);
+  } catch (e) {
+    console.error("Error fetching product vehicles:", e);
+    return res.status(500).json({ error: e.message || "Server error" });
+  }
+});
+
+// ✅ Obtener productos compatibles con un vehículo
+app.get("/api/vehicles/:id/products", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const products = getProductsByVehicle(id);
+    const transformed = transformProductsToFrontend(products);
+
+    // Enriquecer con imágenes
+    const enriched = transformed.map(p => enrichProductWithImages(p, p.id));
+
+    return res.json(enriched);
+  } catch (e) {
+    console.error("Error fetching vehicle products:", e);
+    return res.status(500).json({ error: e.message || "Server error" });
+  }
+});
+
+// ✅ Buscar productos por múltiples vehículos (query param: vehicles=id1,id2,id3)
+app.get("/api/search/by-vehicles", async (req, res) => {
+  try {
+    const { vehicles } = req.query;
+
+    if (!vehicles) {
+      return res.status(400).json({ error: "Missing vehicles parameter" });
+    }
+
+    const vehicleIds = vehicles.split(',').map(v => v.trim());
+    const products = searchProductsByVehicles(vehicleIds);
+    const transformed = transformProductsToFrontend(products);
+
+    // Enriquecer con imágenes
+    const enriched = transformed.map(p => enrichProductWithImages(p, p.id));
+
+    return res.json(enriched);
+  } catch (e) {
+    console.error("Error searching products by vehicles:", e);
     return res.status(500).json({ error: e.message || "Server error" });
   }
 });

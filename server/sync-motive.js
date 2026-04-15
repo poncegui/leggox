@@ -2,7 +2,23 @@
  * Script para sincronizar productos de Leggox desde la API de Motive (Mercagarage)
  */
 
-import { upsertProduct } from './database.js';
+import {
+  upsertProduct,
+  upsertVehicle,
+  linkProductToVehicle,
+  clearProductVehicles,
+} from './database.js';
+
+import {
+  extractVehicleModels,
+  buildVehicleId,
+  buildVehicleName,
+} from './vehicle-parser.js';
+
+import {
+  extractTechnicalInfo,
+  generateTechnicalDescription,
+} from './technical-parser.js';
 
 const MOTIVE_API_URL = 'https://search.api.motive.co/search';
 const ENGINE_ID = 'cc422676-4596-49aa-a7f0-655cc7b0789a';
@@ -85,6 +101,12 @@ function transformMotiveProduct(doc) {
   const images = doc.images || [];
   const mainImage = images.length > 0 ? images[0].url : null;
 
+  // Extraer todas las imágenes disponibles
+  const allImages = images.map((img, index) => ({
+    url: img.url || '',
+    alt: img.alt || `Imagen ${index + 1}`,
+  }));
+
   // Extract model from f5 field (e.g., "SEAT 600") or name
   const name = doc.name || '';
   const f5Models = doc.f5 || [];
@@ -133,6 +155,14 @@ function transformMotiveProduct(doc) {
     subtitle = `SEAT ${model}`;
   }
 
+  // Extraer información técnica
+  const productForParsing = {
+    title: name,
+    subtitle: subtitle,
+    description: name,
+  };
+  const technical = extractTechnicalInfo(productForParsing);
+
   return {
     id: String(doc.id),
     reference: doc.code?.reference || null,
@@ -147,9 +177,11 @@ function transformMotiveProduct(doc) {
     stock: Math.floor(doc.availability?.stock || 0),
     minimumQuantity: doc.availability?.allow_order ? 1 : 0,
     imageUrl: mainImage,
+    images: allImages.length > 0 ? JSON.stringify(allImages) : null, // ✅ Todas las imágenes
     category: category,
     brand: 'SEAT',
     model: model || null,
+    technical: technical ? JSON.stringify(technical) : null,
     mercagarageSynced: 1,
     lastSyncAt: new Date().toISOString(),
   };
@@ -180,6 +212,33 @@ async function syncProducts() {
 
         upsertProduct(product);
 
+        // ✅ Extraer y asociar vehículos
+        const textToParse = [product.title, product.subtitle]
+          .filter(Boolean)
+          .join(' ');
+        const models = extractVehicleModels(textToParse);
+
+        if (models.length > 0) {
+          // Limpiar asociaciones anteriores
+          clearProductVehicles(product.id);
+
+          // Crear vehículos y asociaciones
+          for (const model of models) {
+            const brand = 'SEAT';
+            const vehicleId = buildVehicleId(brand, model);
+            const fullName = buildVehicleName(brand, model);
+
+            upsertVehicle({
+              id: vehicleId,
+              brand,
+              model,
+              fullName,
+            });
+
+            linkProductToVehicle(product.id, vehicleId);
+          }
+        }
+
         if (existing) {
           updated++;
           console.log(`🔄 ACTUALIZADO: ${product.title}`);
@@ -188,12 +247,13 @@ async function syncProducts() {
           console.log(`✨ NUEVO: ${product.title}`);
         }
 
-        // Show price and stock info
+        // Show price, stock and vehicles info
         const priceInfo = product.hasDiscount
           ? `€${product.price} (antes €${product.originalPrice}) 🔥`
           : `€${product.price}`;
         const stockInfo = product.stock > 0 ? `✅ Stock: ${product.stock}` : '❌ Sin stock';
-        console.log(`   ${priceInfo} | ${stockInfo}`);
+        const vehiclesInfo = models.length > 0 ? `🚗 ${models.join(', ')}` : '⚠️ Sin vehículos';
+        console.log(`   ${priceInfo} | ${stockInfo} | ${vehiclesInfo}`);
         console.log(`   📸 ${product.imageUrl || 'Sin imagen'}`);
         console.log('   ' + '-'.repeat(66));
 

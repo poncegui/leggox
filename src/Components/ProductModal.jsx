@@ -9,6 +9,82 @@ const COLORS = {
   gray: '#1A1A1A',
 };
 
+// Función para limpiar el título de menciones de vehículos
+// (Sincronizada con server/title-cleaner.js)
+function cleanProductTitle(title) {
+  if (!title) return title;
+
+  let cleaned = title;
+
+  // Paso 1: Remover patrones específicos de SEAT con modelos
+  const seatPatterns = [
+    /\bSEAT\s+\d{3,4}(?:\s*[\/,y]\s*\d{3,4})*/gi,
+    /\bSEAT\s+(?:Panda|PANDA|Marbella|MARBELLA|Fura|FURA|Sport|SPORT)\b/gi,
+    /\bSEAT\s+\d{3,4}\s+Sport\b/gi,
+    /\bSEAT\s+FL(?:\/\d{3,4})?\b/gi,
+  ];
+
+  seatPatterns.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 2: Remover nombres de modelos standalone
+  const modelNames = [
+    /\bBocanegra\b/gi,
+    /\bBOCANEGRA\b/g,
+    /\bMirafiori\b/gi,
+    /\bSupermirafiori\b/gi,
+    /\bSport\s+(?=-)/gi,
+    /\bSPORT\s+(?=-)/g,
+    /\bSport\b(?!\s+(-|Doble))/gi,
+    /\bSPORT\b(?!\s+(-|Doble))/g,
+    /\bFL\b/g,
+  ];
+
+  modelNames.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 3: Remover números de modelos standalone con separadores
+  const numberPatterns = [
+    /\b\d{3,4}\s*[\/,]\s*\d{3,4}(?:\s*[\/,]\s*\d{3,4})*/g,
+    /\b\d{3,4}\s+y\s+\d{3,4}\b/g,
+    /\s+(?:Sport|SPORT|Especial|ESPECIAL|Normal|NORMAL)\s*$/gi,
+  ];
+
+  numberPatterns.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 4: Remover texto común que aparece con vehículos
+  const commonPhrases = [
+    /\s+para\s+SEAT\s+.*$/gi,
+    /\s+en\s+SEAT\s+.*$/gi,
+    /\s+compatible\s+con\s+SEAT\s+.*$/gi,
+    /\s+válido\s+para\s+SEAT\s+.*$/gi,
+  ];
+
+  commonPhrases.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, '');
+  });
+
+  // Paso 5: Limpiar conectores huérfanos y espacios múltiples
+  cleaned = cleaned
+    .replace(/\s*[,\/y]\s*$/gi, '')
+    .replace(/^\s*[,\/y]\s*/gi, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*-\s*$/, '')
+    .replace(/\(\s*\)/g, '')
+    .trim();
+
+  // Paso 6: Validación
+  if (cleaned.length < 10) {
+    return title;
+  }
+
+  return cleaned;
+}
+
 function generateMercagarageUrl(productId, productTitle) {
   const numericId = String(productId).match(/\d+/)?.[0] || productId;
 
@@ -29,8 +105,25 @@ export default function ProductModal({ product, isOpen, onClose }) {
   const [quantity, setQuantity] = useState(1);
   const [imageZoomed, setImageZoomed] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!isOpen || !product) return null;
+
+  // Obtener galería de imágenes
+  const imageGallery = product.imageGallery || product.images || [];
+  const hasMultipleImages = Array.isArray(imageGallery) && imageGallery.length > 1;
+  const hasImages = Array.isArray(imageGallery) && imageGallery.length > 0;
+  const currentImage = hasImages
+    ? imageGallery[currentImageIndex]?.url || product.imageSrc
+    : product.imageSrc;
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % imageGallery.length);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + imageGallery.length) % imageGallery.length);
+  };
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -117,7 +210,7 @@ export default function ProductModal({ product, isOpen, onClose }) {
                   lineHeight: 1.2,
                 }}
               >
-                {product.title}
+                {cleanProductTitle(product.title)}
               </div>
               {product.subtitle && (
                 <div
@@ -172,7 +265,7 @@ export default function ProductModal({ product, isOpen, onClose }) {
           >
             {/* Imagen y Descripción */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* Imagen */}
+              {/* Imagen con galería */}
               <div
                 style={{
                   borderRadius: 14,
@@ -185,11 +278,11 @@ export default function ProductModal({ product, isOpen, onClose }) {
                   position: 'relative',
                 }}
               >
-                {product.imageSrc ? (
+                {currentImage ? (
                   <>
                     <img
-                      src={product.imageSrc}
-                      alt={`Imagen de ${product.title}`}
+                      src={currentImage}
+                      alt={`Imagen ${currentImageIndex + 1} de ${product.title}`}
                       style={{
                         width: '100%',
                         height: 360,
@@ -201,6 +294,86 @@ export default function ProductModal({ product, isOpen, onClose }) {
                       }}
                       onClick={() => setImageZoomed(true)}
                     />
+
+                    {/* Botones de navegación si hay múltiples imágenes */}
+                    {hasMultipleImages && (
+                      <>
+                        <button
+                          onClick={handlePrevImage}
+                          aria-label="Imagen anterior"
+                          style={{
+                            position: 'absolute',
+                            left: 8,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'rgba(0,0,0,0.7)',
+                            border: 'none',
+                            color: '#FFFFFF',
+                            borderRadius: '50%',
+                            width: 36,
+                            height: 36,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.9)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.7)'}
+                        >
+                          ‹
+                        </button>
+
+                        <button
+                          onClick={handleNextImage}
+                          aria-label="Siguiente imagen"
+                          style={{
+                            position: 'absolute',
+                            right: 8,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'rgba(0,0,0,0.7)',
+                            border: 'none',
+                            color: '#FFFFFF',
+                            borderRadius: '50%',
+                            width: 36,
+                            height: 36,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.9)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.7)'}
+                        >
+                          ›
+                        </button>
+
+                        {/* Indicador de imagen actual */}
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 12,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            background: 'rgba(0,0,0,0.7)',
+                            color: '#FFFFFF',
+                            padding: '4px 10px',
+                            borderRadius: 12,
+                            fontFamily: 'ui-monospace, monospace',
+                            fontSize: 11,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {currentImageIndex + 1} / {imageGallery.length}
+                        </div>
+                      </>
+                    )}
 
                     {/* Badge SIN STOCK */}
                     {!product.inStock && (
@@ -246,42 +419,179 @@ export default function ProductModal({ product, isOpen, onClose }) {
                   <div style={{ fontSize: 64, color: '#CCC' }}>📦</div>
                 )}{' '}
               </div>
-              {/* Descripción del producto */}
-              {product.description && (
+
+              {/* Especificaciones Técnicas */}
+              {product.technical && Object.keys(product.technical).length > 0 && (
                 <div
                   style={{
-                    border: '1px solid rgba(0,0,0,0.1)',
-                    borderRadius: 14,
-                    padding: 12,
-                    backgroundColor: 'rgba(255,255,255,0.5)',
+                    padding: 14,
+                    borderRadius: 12,
+                    backgroundColor: 'rgba(224,30,55,0.08)',
+                    border: '1px solid rgba(224,30,55,0.2)',
                   }}
                 >
                   <div
                     style={{
                       fontFamily: 'ui-monospace, monospace',
-                      fontSize: 11,
-                      letterSpacing: '2px',
+                      fontSize: 10,
+                      letterSpacing: '1.5px',
                       color: COLORS.red,
                       fontWeight: 800,
-                      marginBottom: 8,
+                      marginBottom: 10,
                     }}
                   >
-                    DESCRIPCIÓN
+                    ESPECIFICACIONES TÉCNICAS
                   </div>
+
                   <div
                     style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 6,
                       fontFamily: 'APERCU, sans-serif',
                       fontSize: 13,
                       color: COLORS.black,
-                      lineHeight: 1.6,
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
                     }}
                   >
-                    {product.description}
+                    {product.technical.material && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Material:
+                        </span>
+                        <span>{product.technical.material}</span>
+                      </div>
+                    )}
+
+                    {product.technical.engineSize && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Motor:
+                        </span>
+                        <span>{product.technical.engineSize}</span>
+                      </div>
+                    )}
+
+                    {product.technical.cores && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Núcleos:
+                        </span>
+                        <span>{product.technical.cores}</span>
+                      </div>
+                    )}
+
+                    {product.technical.layers && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Capas:
+                        </span>
+                        <span>{product.technical.layers}</span>
+                      </div>
+                    )}
+
+                    {product.technical.type && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Tipo:
+                        </span>
+                        <span>{product.technical.type}</span>
+                      </div>
+                    )}
+
+                    {product.technical.diameter && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Diámetro:
+                        </span>
+                        <span>{product.technical.diameter}</span>
+                      </div>
+                    )}
+
+                    {product.technical.measurements && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Medidas:
+                        </span>
+                        <span>{product.technical.measurements}</span>
+                      </div>
+                    )}
+
+                    {product.technical.color && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Color:
+                        </span>
+                        <span>{product.technical.color}</span>
+                      </div>
+                    )}
+
+                    {product.technical.isOEM && (
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontWeight: 700, minWidth: 80 }}>
+                          Calidad:
+                        </span>
+                        <span style={{ color: COLORS.red, fontWeight: 700 }}>
+                          OEM Original
+                        </span>
+                      </div>
+                    )}
+
+                    {product.technical.notes && (
+                      <div
+                        style={{
+                          marginTop: 6,
+                          paddingTop: 8,
+                          borderTop: '1px solid rgba(0,0,0,0.1)',
+                          fontSize: 12,
+                          color: COLORS.gray,
+                          fontStyle: 'italic',
+                        }}
+                      >
+                        {product.technical.notes}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
+
+              {/* Descripción del producto - solo si es diferente del título */}
+              {product.description &&
+                product.description.trim() !== product.title.trim() &&
+                product.description.trim().length > 10 && (
+                  <div
+                    style={{
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      borderRadius: 14,
+                      padding: 12,
+                      backgroundColor: 'rgba(255,255,255,0.5)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: 'ui-monospace, monospace',
+                        fontSize: 11,
+                        letterSpacing: '2px',
+                        color: COLORS.red,
+                        fontWeight: 800,
+                        marginBottom: 8,
+                      }}
+                    >
+                      DESCRIPCIÓN
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: 'APERCU, sans-serif',
+                        fontSize: 13,
+                        color: COLORS.black,
+                        lineHeight: 1.6,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {product.description}
+                    </div>
+                  </div>
+                )}
             </div>
 
             {/* Info lateral */}
@@ -674,8 +984,8 @@ export default function ProductModal({ product, isOpen, onClose }) {
             onClick={() => setImageZoomed(false)}
           >
             <img
-              src={product.imageSrc}
-              alt={product.title}
+              src={currentImage}
+              alt={`${product.title} - Imagen ${currentImageIndex + 1}`}
               style={{
                 maxWidth: '90vw',
                 maxHeight: '90vh',

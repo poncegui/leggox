@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PayPalCheckout from './PayPalCheckout';
 import { useProducts } from '../hooks/useProducts';
+import { useVehicles } from '../hooks/useVehicles';
 import { useCart } from '../context/CartContext';
 import ProductModal from './ProductModal';
 // Importar imágenes de coches
@@ -35,7 +36,22 @@ const COLLECTION_TAGLINE = 'BUSCA POR MODELO DE VEHÍCULO';
 
 // Mapeo de modelos a imágenes de coches
 const MODEL_IMAGES = {
-  // Formato: "SEAT XXX" (como viene del servidor)
+  // Por ID de vehículo (formato normalizado)
+  'seat-600': seat600,
+  'seat-127': seat127,
+  'seat-128': seat128,
+  'seat-131': seat131,
+  'seat-124': seat124,
+  'seat-124-sport': seatBocanegra,
+  'seat-133': seat133,
+  'seat-850': seat850,
+  'seat-1200': seat1200,
+  'seat-panda': seatPanda,
+  'seat-marbella': seatMarbella,
+  'seat-1430': SEAT1430,
+  'seat-fura': seatRanchera,
+
+  // Por nombre completo (para compatibilidad)
   'SEAT 600': seat600,
   'SEAT 127': seat127,
   'SEAT 128': seat128,
@@ -45,36 +61,21 @@ const MODEL_IMAGES = {
   'SEAT 133': seat133,
   'SEAT 850': seat850,
   'SEAT 1200': seat1200,
-  'SEAT PANDA': seatPanda,
   'SEAT Panda': seatPanda,
-  'SEAT MARBELLA': seatMarbella,
   'SEAT Marbella': seatMarbella,
   'SEAT 1430': SEAT1430,
-  'SEAT FL/1430': SEAT1430,
-  'SEAT 124/1430': seat124,
-  'SEAT FURA': seatRanchera,
   'SEAT Fura': seatRanchera,
-  'SEAT UNIVERSAL': otros,
-  // Alternativas (por si acaso)
-  '600': seat600,
-  '127': seat127,
-  '128': seat128,
-  '131': seat131,
-  '133': seat133,
-  '124': seat124,
-  '850': seat850,
-  '1200': seat1200,
-  'PANDA': seatPanda,
-  '1430': SEAT1430,
+
   // Fallback
-  'SEAT': otros,
-  'Otros': otros,
-  'otros': otros,
+  SEAT: otros,
+  Otros: otros,
+  otros: otros,
 };
 
 // ✅ Hook para transformar productos de la API
 function useTransformedProducts() {
   const { products: apiProducts, loading, error } = useProducts();
+  const { vehicles: apiVehicles, loading: loadingVehicles } = useVehicles();
 
   const transformedData = useMemo(() => {
     if (!apiProducts || apiProducts.length === 0) {
@@ -153,41 +154,28 @@ function useTransformedProducts() {
       tags: p.tags || [],
     }));
 
-    // Extraer modelos únicos
-    const uniqueModels = [
-      ...new Set(PRODUCTS_DATA.flatMap(p => p.vehicles || [])),
-    ];
-
-    // Construir modelos
-    const MODELOS = uniqueModels
-      .filter(modelName => modelName !== 'Otros')
-      .map((modelName, idx) => {
-        // Normalizar el título del modelo para mostrar "SEAT UNIVERSAL" en lugar de solo "SEAT"
-        const displayTitle = modelName === 'SEAT' ? 'SEAT UNIVERSAL' : modelName;
-        return {
-          id: `model-${idx}`,
-          title: displayTitle,
-          subtitle: `Piezas compatibles con ${displayTitle}`,
-          vehicles: [modelName],
-          images: {
-            sketch: MODEL_IMAGES[modelName] || null,
-          },
-        };
-      })
-      .filter(m => {
-        const mangCount = Manguitos.filter(it =>
-          (it.vehicles || []).includes(m.vehicles[0]),
-        ).length;
-        const radCount = RADIADORES.filter(it =>
-          (it.vehicles || []).includes(m.vehicles[0]),
-        ).length;
-        return mangCount + radCount > 0;
-      });
+    // ✅ Usar vehículos normalizados de la API en lugar de extraer de productos
+    const MODELOS = (apiVehicles || []).map(vehicle => {
+      const displayTitle = vehicle.full_name;
+      return {
+        id: vehicle.id,
+        title: displayTitle,
+        subtitle: `Piezas compatibles con ${displayTitle}`,
+        vehicles: [vehicle.full_name], // Para compatibilidad con código existente
+        vehicleId: vehicle.id, // ID normalizado del vehículo
+        images: {
+          sketch:
+            MODEL_IMAGES[vehicle.full_name] ||
+            MODEL_IMAGES[vehicle.id] ||
+            otros,
+        },
+      };
+    });
 
     return { Manguitos, RADIADORES, MODELOS };
-  }, [apiProducts]);
+  }, [apiProducts, apiVehicles]);
 
-  return { ...transformedData, loading, error };
+  return { ...transformedData, loading: loading || loadingVehicles, error };
 }
 
 /** Utils */
@@ -825,16 +813,49 @@ export default function BuscadorPiezas({ onSelectedChange }) {
             {COLLECTION_NAME}
           </Mono>
 
-          <Text
+          <Row
             style={{
-              fontSize: isSmall ? 22 : isMobile ? 30 : 44,
-              fontWeight: 400,
-              letterSpacing: -1.0,
-              lineHeight: 1.05,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 16,
+              flexWrap: 'wrap',
             }}
           >
-            {COLLECTION_TAGLINE}
-          </Text>
+            <Text
+              style={{
+                fontSize: isSmall ? 22 : isMobile ? 30 : 44,
+                fontWeight: 400,
+                letterSpacing: -1.0,
+                lineHeight: 1.05,
+              }}
+            >
+              {COLLECTION_TAGLINE}
+            </Text>
+
+            {selectedModel && (
+              <Button
+                onPress={() => {
+                  setSelectedModel(null);
+                  setTab('modelos');
+                  setQ('');
+                }}
+                style={{
+                  backgroundColor: '#E01E37',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: isMobile ? '12px 16px' : '14px 20px',
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  fontSize: isMobile ? 13 : 14,
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                }}
+                ariaLabel="Ver listado completo de modelos"
+              >
+                ← Ver listado completo
+              </Button>
+            )}
+          </Row>
 
           <div style={styles.line} />
 
@@ -1029,14 +1050,23 @@ export default function BuscadorPiezas({ onSelectedChange }) {
                         setQ('');
                       }}
                       style={{
-                        backgroundColor: '#F5F5F5',
-                        color: '#666666',
-                        border: '1px solid #E0E0E0',
-                        padding: '10px 12px',
+                        backgroundColor: '#078D92',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        padding: '12px 18px',
+                        borderRadius: 8,
+                        fontWeight: 700,
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 2px 8px rgba(7, 141, 146, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
                       }}
                       ariaLabel="Cambiar modelo"
                     >
-                      Cambiar
+                      ⟲ Cambiar modelo
                     </Button>
                   </Row>
 
@@ -1170,7 +1200,7 @@ export default function BuscadorPiezas({ onSelectedChange }) {
                           <ProductCard
                             item={item}
                             onSelect={setSelected}
-                            onViewDetails={(product) => {
+                            onViewDetails={product => {
                               setSelected(product);
                               setIsProductModalOpen(true);
                             }}

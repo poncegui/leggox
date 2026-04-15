@@ -2,6 +2,8 @@
  * Transformers / DTOs para convertir datos de BD al formato esperado por el frontend
  */
 
+import { cleanProductTitle } from './title-cleaner.js';
+
 /**
  * Transforma un producto de la BD al formato esperado por los componentes React
  */
@@ -17,7 +19,7 @@ export function transformProductToFrontend(dbProduct) {
 
     // Información básica
     type: dbProduct.category || 'general',
-    title: dbProduct.title,
+    title: cleanProductTitle(dbProduct.title), // ✅ Título limpio sin modelos de vehículos
     subtitle: dbProduct.subtitle || '',
     description: dbProduct.description || '',
 
@@ -40,10 +42,10 @@ export function transformProductToFrontend(dbProduct) {
     // Imágenes
     imageSrc: (dbProduct.image_url && dbProduct.image_url.trim()) || null,
     imageLargeSrc: (dbProduct.image_url && dbProduct.image_url.trim()) || null,
-    images: {
-      sketch: (dbProduct.image_url && dbProduct.image_url.trim()) || null,
-      real: (dbProduct.image_url && dbProduct.image_url.trim()) || null,
-    },
+    images: dbProduct.images ? JSON.parse(dbProduct.images) : (dbProduct.image_url ? [{ url: dbProduct.image_url, alt: '' }] : []),
+    imageGallery: dbProduct.images
+      ? JSON.parse(dbProduct.images)
+      : (dbProduct.image_url ? [{ url: dbProduct.image_url, alt: '' }] : []),
 
     // URLs
     buyUrl: generateBuyUrl(dbProduct.id, dbProduct.reference, dbProduct.title),
@@ -114,89 +116,52 @@ function generateProductUrl(id, title) {
 }
 
 /**
- * Genera imagen por defecto según categoría
- */
-function generateDefaultImage(category) {
-  // Retornar null para que los componentes manejen el fallback
-  return null;
-}
-
-/**
  * Parsea vehículos desde el modelo y marca
  */
 function parseVehicles(model, brand, title = '') {
   const vehicles = [];
   const processedNumbers = new Set();
 
-  if (brand && model) {
-    // Parsear múltiples modelos si existen (separados por "y", "-", ",", etc)
+  // Si no hay brand, no procesamos nada
+  if (!brand) {
+    return vehicles;
+  }
+
+  if (model) {
+    // Parsear múltiples modelos si existen (separados por "y", "-", ",", "/", etc)
     const modelParts = model
-      .split(/\s+y\s+|,\s*|-\s*|;\s*/i)
+      .split(/\s*\/\s*|\s+y\s+|,\s*|-\s*|;\s*/i)
       .map(m => m.trim())
       .filter(m => m.length > 0);
 
     modelParts.forEach(m => {
-      // Si es solo un número, convertir a "SEAT XXX"
+      // Si es solo un número, convertir a "BRAND XXX"
       if (/^\d+$/.test(m)) {
         vehicles.push(`${brand} ${m}`);
         processedNumbers.add(m);
-      } else if (!m.startsWith(brand)) {
+      } else if (!/^\d+$/.test(m)) {
+        // Si no es un número puro, agregarlo con el brand
         vehicles.push(`${brand} ${m}`);
-      } else {
-        vehicles.push(m);
       }
     });
-  } else if (brand) {
+  } else {
+    // Si no hay model, solo usar el brand
     vehicles.push(brand);
-  } else if (model) {
-    // Parsear múltiples modelos si existen (separados por "y", "-", ",", etc)
-    const modelParts = model
-      .split(/\s+y\s+|,\s*|-\s*|;\s*/i)
-      .map(m => m.trim())
-      .filter(m => m.length > 0);
-
-    modelParts.forEach(m => {
-      // Si es solo un número, convertir a "SEAT XXX"
-      if (/^\d+$/.test(m)) {
-        vehicles.push(`SEAT ${m}`);
-        processedNumbers.add(m);
-      } else {
-        vehicles.push(m);
-      }
-    });
   }
 
   // Extraer números del título si no fueron procesados
   if (title && brand) {
-    const titleNumbers = title.match(/\b(\d{3})\b/g) || [];
+    const titleNumbers = title.match(/\b(\d{3}|\d{2}|\d{1})\b/g) || [];
     titleNumbers.forEach(num => {
-      if (!processedNumbers.has(num)) {
+      // Filtrar números raros (evitar 0, 1, 2, etc)
+      if (!processedNumbers.has(num) && /^\d{3}$/.test(num)) {
         vehicles.push(`${brand} ${num}`);
         processedNumbers.add(num);
       }
     });
   }
 
-  // Extraer modelos comunes del título si no hay modelo específico
-  const commonModels = [
-    'SEAT 600',
-    'SEAT 127',
-    'SEAT 128',
-    'SEAT 131',
-    'SEAT 124',
-    'SEAT 124 Sport',
-    'SEAT 133',
-    'SEAT 850',
-    'SEAT 1200',
-    'SEAT Panda',
-    'SEAT Marbella',
-    'SEAT 1430',
-    'SEAT FL/1430',
-    'SEAT 124/1430',
-    'SEAT Fura',
-  ];
-
-  return vehicles.length > 0 ? vehicles : [];
+  return vehicles;
 }
 
 /**

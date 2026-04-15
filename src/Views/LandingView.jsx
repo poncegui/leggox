@@ -1,19 +1,19 @@
-import "../App.css";
+import '../App.css';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import PromoModule from "../Components/PromoModule";
-import FeaturedKits from "../Components/FeaturedKits";
-import Footer from "../Components/Footer/Footer";
-import HeaderSection from "../Components/HeadingSection/HeaderSection";
-import BuscadorPiezas from "../Components/BuscadorPiezas";
-import ProductShowcase from "../Components/ProductShowcase";
-import ScrollStepper from "../Components/ScrollStepper";
-import mercagarageLogo from "../Assets/images/mercagarage-logo.jpg";
+import PromoModule from '../Components/PromoModule';
+import FeaturedKits from '../Components/FeaturedKits';
+import Footer from '../Components/Footer/Footer';
+import HeaderSection from '../Components/HeadingSection/HeaderSection';
+import BuscadorPiezas from '../Components/BuscadorPiezas';
+import ProductShowcase from '../Components/ProductShowcase';
+import ScrollStepper from '../Components/ScrollStepper';
+import mercagarageLogo from '../Assets/images/mercagarage-logo.jpg';
 // import PitlaneRunner from "../Components/PitlaneRunner"; // Movido a vista separada
 
 // ✅ Iconos SVG para Mercagarage
-function IconTruckFast({ size = 32, color = "currentColor" }) {
+function IconTruckFast({ size = 32, color = 'currentColor' }) {
   return (
     <svg
       width={size}
@@ -33,7 +33,7 @@ function IconTruckFast({ size = 32, color = "currentColor" }) {
   );
 }
 
-function IconCheck({ size = 32, color = "currentColor" }) {
+function IconCheck({ size = 32, color = 'currentColor' }) {
   return (
     <svg
       width={size}
@@ -50,7 +50,7 @@ function IconCheck({ size = 32, color = "currentColor" }) {
   );
 }
 
-function IconMessageCircle({ size = 32, color = "currentColor" }) {
+function IconMessageCircle({ size = 32, color = 'currentColor' }) {
   return (
     <svg
       width={size}
@@ -69,15 +69,15 @@ function IconMessageCircle({ size = 32, color = "currentColor" }) {
 
 // Definir colores de fondo por sección
 const SECTION_BACKGROUNDS = {
-  0: "#000000", // Header - Negro
-  1: "#FFFFFF", // Modelos - Blanco
-  2: "#1A1A1A", // Catálogo - Gris oscuro
-  3: "#FFFFFF", // Galería - Blanco
-  4: "#000000", // Configurador - Negro
-  5: "#FFFFFF", // Presupuesto - Blanco
-  6: "#1A1A1A", // Manguitos - Gris oscuro
-  7: "#000000", // Información - Negro
-  8: "#1A1A1A", // Footer/Contacto - Gris oscuro
+  0: '#000000', // Header - Negro
+  1: '#FFFFFF', // Modelos - Blanco
+  2: '#1A1A1A', // Catálogo - Gris oscuro
+  3: '#FFFFFF', // Galería - Blanco
+  4: '#000000', // Configurador - Negro
+  5: '#FFFFFF', // Presupuesto - Blanco
+  6: '#1A1A1A', // Manguitos - Gris oscuro
+  7: '#000000', // Información - Negro
+  8: '#1A1A1A', // Footer/Contacto - Gris oscuro
 };
 
 function App() {
@@ -94,8 +94,8 @@ function App() {
       setIsMobile(window.innerWidth < 768);
     };
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Tracking de scroll para vista vertical
@@ -103,7 +103,7 @@ function App() {
     const handleScroll = () => {
       if (!hasScrolled) {
         setHasScrolled(true);
-        document.documentElement.style.scrollSnapType = "y proximity";
+        document.documentElement.style.scrollSnapType = 'y proximity';
       }
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
@@ -111,18 +111,18 @@ function App() {
       setCurrentSection(Math.min(section, totalSections - 1));
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [totalSections, hasScrolled]);
 
   const sectionNames = [
-    "Inicio",
-    "Ofertas",
-    "Manguitos y radiadores",
-    "Búsqueda por vehículo",
-    "Leggox Race",
-    "Contacto",
+    'Inicio',
+    'Ofertas',
+    'Manguitos y radiadores',
+    'Búsqueda por vehículo',
+    'Leggox Race',
+    'Contacto',
   ];
 
   return (
@@ -130,8 +130,8 @@ function App() {
       {/* Secciones */}
       <div
         style={{
-          minHeight: "100vh",
-          scrollSnapAlign: "start",
+          minHeight: '100vh',
+          scrollSnapAlign: 'start',
           backgroundColor: SECTION_BACKGROUNDS[0],
         }}
       >
@@ -149,19 +149,19 @@ function App() {
       </section> */}
 
       {/* NUEVO: Sección de Kits Completos */}
-      <section
+      {/* <section
         style={{
           scrollSnapAlign: "start",
           backgroundColor: SECTION_BACKGROUNDS[2],
         }}
       >
         <FeaturedKits />
-      </section>
+      </section> */}
 
       <section
         style={{
-          minHeight: "100vh",
-          scrollSnapAlign: "start",
+          minHeight: '100vh',
+          scrollSnapAlign: 'start',
           backgroundColor: SECTION_BACKGROUNDS[1],
         }}
       >
@@ -170,8 +170,8 @@ function App() {
 
       <section
         style={{
-          minHeight: "100vh",
-          scrollSnapAlign: "start",
+          minHeight: '100vh',
+          scrollSnapAlign: 'start',
           backgroundColor: SECTION_BACKGROUNDS[4],
         }}
       >
@@ -184,17 +184,17 @@ function App() {
       {/* Sección Mercagarage */}
       <section
         style={{
-          backgroundColor: "#000000",
-          padding: "60px 20px",
-          borderTop: "1px solid rgba(255,255,255,0.1)",
-          position: "relative",
-          overflow: "hidden",
+          backgroundColor: '#000000',
+          padding: '60px 20px',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
         {/* Bandera de competición de fondo */}
         <div
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
@@ -216,28 +216,28 @@ function App() {
             )
           `,
             opacity: 0.6,
-            pointerEvents: "none",
+            pointerEvents: 'none',
           }}
         />
 
         <div
           style={{
-            position: "relative",
+            position: 'relative',
             zIndex: 1,
             maxWidth: 1200,
-            margin: "0 auto",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             gap: 40,
           }}
         >
           {/* Logo y título */}
           <div
             style={{
-              textAlign: "center",
-              display: "flex",
-              flexDirection: "column",
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
               gap: 16,
             }}
           >
@@ -246,8 +246,8 @@ function App() {
               alt="Mercagarage - Accesorios & Recambios Automoción"
               style={{
                 maxWidth: 450,
-                width: "100%",
-                height: "auto",
+                width: '100%',
+                height: 'auto',
                 marginBottom: 16,
               }}
             />
@@ -255,7 +255,7 @@ function App() {
               style={{
                 fontSize: 16,
                 margin: 0,
-                color: "rgba(255,255,255,0.7)",
+                color: 'rgba(255,255,255,0.7)',
                 fontFamily:
                   'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial',
               }}
@@ -267,10 +267,10 @@ function App() {
           {/* Features grid */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
               gap: 24,
-              width: "100%",
+              width: '100%',
             }}
           >
             <div style={mercaStyles.featureCard}>
@@ -335,14 +335,14 @@ const mercaStyles = {
   featureCard: {
     padding: 24,
     borderRadius: 16,
-    border: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.03)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
+    border: '1px solid rgba(0,0,0,0.1)',
+    background: '#FFFFFF',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
     gap: 12,
-    transition: "all 0.3s ease",
+    transition: 'all 0.3s ease',
   },
   featureIcon: {
     fontSize: 32,
@@ -352,32 +352,32 @@ const mercaStyles = {
     fontSize: 16,
     fontWeight: 800,
     margin: 0,
-    color: "#FFFFFF",
-    fontFamily: "APERCU, sans-serif",
+    color: '#000000',
+    fontFamily: 'APERCU, sans-serif',
   },
   featureText: {
     fontSize: 13,
     margin: 0,
-    color: "rgba(255,255,255,0.6)",
+    color: 'rgba(0,0,0,0.7)',
     lineHeight: 1.5,
     fontFamily:
       'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial',
   },
   ctaButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 12,
-    padding: "16px 32px",
+    padding: '16px 32px',
     borderRadius: 12,
-    border: "2px solid #E01E37",
-    background: "#E01E37",
-    color: "#FFFFFF",
-    textDecoration: "none",
+    border: '2px solid #E01E37',
+    background: '#E01E37',
+    color: '#FFFFFF',
+    textDecoration: 'none',
     fontSize: 16,
     fontWeight: 800,
-    fontFamily: "APERCU, sans-serif",
-    transition: "all 0.3s ease",
-    cursor: "pointer",
+    fontFamily: 'APERCU, sans-serif',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer',
   },
 };
