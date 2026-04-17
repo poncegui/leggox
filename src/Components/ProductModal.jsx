@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 const COLORS = {
   bg: '#FFFFFF',
@@ -114,8 +115,8 @@ export default function ProductModal({ product, isOpen, onClose }) {
   const hasMultipleImages = Array.isArray(imageGallery) && imageGallery.length > 1;
   const hasImages = Array.isArray(imageGallery) && imageGallery.length > 0;
   const currentImage = hasImages
-    ? imageGallery[currentImageIndex]?.url || product.imageSrc
-    : product.imageSrc;
+    ? resolveImageUrl(imageGallery[currentImageIndex]?.url) || resolveImageUrl(product.imageSrc)
+    : resolveImageUrl(product.imageSrc);
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % imageGallery.length);

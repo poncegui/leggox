@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { useVehicles, useProductsByVehicle } from '../hooks/useVehicles';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 // Importar imágenes de coches (ajusta las rutas según tu proyecto)
 import seat600 from '../Assets/images/coches/seat-600.png';
@@ -14,12 +15,14 @@ import seat127 from '../Assets/images/coches/seat-128.png';
 import seat128 from '../Assets/images/coches/seat-128.png';
 import seat131 from '../Assets/images/coches/seat-131.png';
 import seat124 from '../Assets/images/coches/seat-124-biarbol.png';
+import seat124Sport from '../Assets/images/coches/seat-124-sport.png';
 import seat133 from '../Assets/images/coches/seat-133.png';
 import seat1200 from '../Assets/images/coches/seat-1200.png';
 import seat850 from '../Assets/images/coches/seat-850.png';
 import seatPanda from '../Assets/images/coches/seat-panda.png';
 import seatMarbella from '../Assets/images/coches/seat-marbella.png';
 import SEAT1430 from '../Assets/images/coches/seat-131-biarbol.png';
+import SEAT1430FU from '../Assets/images/coches/seat-1430-fu.png';
 import seatBocanegra from '../Assets/images/coches/seat-bocanegra.png';
 import seatRanchera from '../Assets/images/coches/seat-ranchera.png';
 import otros from '../Assets/images/coches/otros.png';
@@ -31,13 +34,15 @@ const MODEL_IMAGES = {
   'seat-128': seat128,
   'seat-131': seat131,
   'seat-124': seat124,
-  'seat-124-sport': seatBocanegra,
+  'seat-124-fl': seat124,
+  'seat-124-sport': seat124Sport,
   'seat-133': seat133,
   'seat-850': seat850,
   'seat-1200': seat1200,
   'seat-panda': seatPanda,
   'seat-marbella': seatMarbella,
   'seat-1430': SEAT1430,
+  'seat-1430-fu': SEAT1430FU,
   'seat-fura': seatRanchera,
 };
 
@@ -162,7 +167,7 @@ function ProductCard({ product }) {
     <div style={styles.productCard}>
       {product.imageSrc && (
         <img
-          src={product.imageSrc}
+          src={resolveImageUrl(product.imageSrc)}
           alt={product.title}
           style={styles.productImage}
         />

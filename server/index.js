@@ -71,6 +71,50 @@ function enrichProductWithImages(product, id) {
         imageSrc: 'https://mercagarage.com/1768-home_default/manguito-silicona-llenado-seat-124-1430.jpg',
         imageLargeSrc: 'https://mercagarage.com/1768-thickbox_default/manguito-silicona-llenado-seat-124-1430.jpg',
       },
+      'mor-477-ek': {
+        imageSrc: '/images/radiadores/kit-radiador-aluminio-doble-nucleo-fl-bi-arbol-con-electros.jpg',
+        imageLargeSrc: '/images/radiadores/kit-radiador-aluminio-doble-nucleo-fl-bi-arbol-con-electros.jpg',
+      },
+      '1776': {
+        imageSrc: '/images/manguitos/manguito-silicona-de-termostato-a-carburador-seat-127-panda-y-marbella-se-020032161a.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-silicona-de-termostato-a-carburador-seat-127-panda-y-marbella-se-020032161a.jpg',
+      },
+      '1771': {
+        imageSrc: '/images/manguitos/manguito-silicona-calefaccion-de-motor-a-radiador-seat-127.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-silicona-calefaccion-de-motor-a-radiador-seat-127.jpg',
+      },
+      '1773': {
+        imageSrc: '/images/manguitos/manguito-silicona-de-bomba-de-agua-a-tubo-seat-127-panda.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-silicona-de-bomba-de-agua-a-tubo-seat-127-panda.jpg',
+      },
+      '60859': {
+        imageSrc: '/images/radiadores/radiador-aluminio-seat-127-fura-cl-1010.jpg',
+        imageLargeSrc: '/images/radiadores/radiador-aluminio-seat-127-fura-cl-1010.jpg',
+      },
+      '60857': {
+        imageSrc: '/images/radiadores/radiador-seat-131-1600cc-doble-núcleo-en-aluminio.jpg',
+        imageLargeSrc: '/images/radiadores/radiador-seat-131-1600cc-doble-núcleo-en-aluminio.jpg',
+      },
+      '60865': {
+        imageSrc: '/images/manguitos/manguito-silicona-de-calefaccion-seat-panda-35-45-xo04412272.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-silicona-de-calefaccion-seat-panda-35-45-xo04412272.jpg',
+      },
+      'mor-477-sek': {
+        imageSrc: '/images/radiadores/kit-radiador-aluminio-seat-124-sport-doble-nucleo-con-electros.jpg',
+        imageLargeSrc: '/images/radiadores/kit-radiador-aluminio-seat-124-sport-doble-nucleo-con-electros.jpg',
+      },
+      '1770': {
+        imageSrc: '/images/manguitos/manguito-silicona-radiador-superior-1430-potenciado.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-silicona-radiador-superior-1430-potenciado.jpg',
+      },
+      '1774': {
+        imageSrc: '/images/manguitos/manguito-entrada-agua-calefactor-seat-1430-1600.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-entrada-agua-calefactor-seat-1430-1600.jpg',
+      },
+      '60864': {
+        imageSrc: '/images/manguitos/manguito-gases-seat-1241430-biarbol-doble-medida.jpg',
+        imageLargeSrc: '/images/manguitos/manguito-gases-seat-1241430-biarbol-doble-medida.jpg',
+      },
     };
 
     // Intentar usar imagen local si existe
@@ -84,25 +128,13 @@ function enrichProductWithImages(product, id) {
       return product;
     }
 
-    // Estrategia de fallback: intentar coincidir con nombre de archivo
-    // Construir un nombre de archivo probable basado en el título
-    const normalizeFilename = (str) => {
-      return (str || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
-    };
-
-    const normalized = normalizeFilename(product.title);
+    // Estrategia de fallback: usar el ID del producto como nombre de archivo
+    // El ID suele coincidir con el nombre real del archivo
     const productType = (product.type || 'manguitos').toLowerCase();
     const imageDir = productType === 'radiador' ? 'radiadores' : 'manguitos';
-    
-    // Intentar la imagen local primero
-    let imageSrc = `/images/${imageDir}/${normalized}.jpg`;
+
+    // Usar el ID del producto directamente (suele coincidir con el nombre del archivo)
+    let imageSrc = `/images/${imageDir}/${id}.jpg`;
     let imageLargeSrc = imageSrc;
 
     // Actualizar el producto

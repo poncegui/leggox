@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import PayPalCheckout from './PayPalCheckout';
 import seatTristeImg from '../Assets/seat-triste.png';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 // Función para limpiar el título de menciones de vehículos
 function cleanProductTitle(title) {
@@ -2119,7 +2120,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
       >
         {imageUrl && !imageError ? (
           <img
-            src={imageUrl}
+            src={resolveImageUrl(imageUrl)}
             alt={item.title}
             style={{
               width: '100%',

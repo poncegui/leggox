@@ -10,12 +10,14 @@ import seat127 from '../Assets/images/coches/seat-128.png';
 import seat128 from '../Assets/images/coches/seat-128.png';
 import seat131 from '../Assets/images/coches/seat-131.png';
 import seat124 from '../Assets/images/coches/seat-124-biarbol.png';
+import seat124Sport from '../Assets/images/coches/seat-124-sport.png';
 import seat133 from '../Assets/images/coches/seat-133.png';
 import seat1200 from '../Assets/images/coches/seat-1200.png';
 import seat850 from '../Assets/images/coches/seat-850.png';
 import seatPanda from '../Assets/images/coches/seat-panda.png';
 import seatMarbella from '../Assets/images/coches/seat-marbella.png';
 import SEAT1430 from '../Assets/images/coches/seat-131-biarbol.png';
+import SEAT1430FU from '../Assets/images/coches/seat-1430-fu.png';
 import seatBocanegra from '../Assets/images/coches/seat-bocanegra.png';
 import seatRanchera from '../Assets/images/coches/seat-ranchera.png';
 import otros from '../Assets/images/coches/otros.png';
@@ -42,13 +44,15 @@ const MODEL_IMAGES = {
   'seat-128': seat128,
   'seat-131': seat131,
   'seat-124': seat124,
-  'seat-124-sport': seatBocanegra,
+  'seat-124-fl': seat124,
+  'seat-124-sport': seat124Sport,
   'seat-133': seat133,
   'seat-850': seat850,
   'seat-1200': seat1200,
   'seat-panda': seatPanda,
   'seat-marbella': seatMarbella,
   'seat-1430': SEAT1430,
+  'seat-1430-fu': SEAT1430FU,
   'seat-fura': seatRanchera,
 
   // Por nombre completo (para compatibilidad)
@@ -57,13 +61,15 @@ const MODEL_IMAGES = {
   'SEAT 128': seat128,
   'SEAT 131': seat131,
   'SEAT 124': seat124,
-  'SEAT 124 Sport': seatBocanegra,
+  'SEAT 124 FL': seat124,
+  'SEAT 124 Sport': seat124Sport,
   'SEAT 133': seat133,
   'SEAT 850': seat850,
   'SEAT 1200': seat1200,
   'SEAT Panda': seatPanda,
   'SEAT Marbella': seatMarbella,
   'SEAT 1430': SEAT1430,
+  'SEAT 1430 FU': SEAT1430FU,
   'SEAT Fura': seatRanchera,
 
   // Fallback
@@ -124,10 +130,10 @@ function useTransformedProducts() {
       buyUrl: p.buyUrl || `https://mercagarage.com/recambios/${p.reference}`,
       slug: p.reference,
       sku: p.reference,
-      images: {
-        sketch: resolveImageUrl(p.imageSrc),
-        real: resolveImageUrl(p.imageLargeSrc),
-      },
+      imageSrc: resolveImageUrl(p.imageSrc),
+      imageLargeSrc: resolveImageUrl(p.imageLargeSrc),
+      images: p.images || (p.imageSrc ? [{ url: resolveImageUrl(p.imageSrc), alt: p.title }] : []),
+      imageGallery: p.imageGallery || p.images || (p.imageSrc ? [{ url: resolveImageUrl(p.imageSrc), alt: p.title }] : []),
       vehicles: p.vehicles || [],
       tags: p.tags || [],
     }));
@@ -146,10 +152,10 @@ function useTransformedProducts() {
       buyUrl: p.buyUrl || `https://mercagarage.com/recambios/${p.reference}`,
       slug: p.reference,
       sku: p.reference,
-      images: {
-        sketch: resolveImageUrl(p.imageSrc),
-        real: resolveImageUrl(p.imageLargeSrc),
-      },
+      imageSrc: resolveImageUrl(p.imageSrc),
+      imageLargeSrc: resolveImageUrl(p.imageLargeSrc),
+      images: p.images || (p.imageSrc ? [{ url: resolveImageUrl(p.imageSrc), alt: p.title }] : []),
+      imageGallery: p.imageGallery || p.images || (p.imageSrc ? [{ url: resolveImageUrl(p.imageSrc), alt: p.title }] : []),
       vehicles: p.vehicles || [],
       tags: p.tags || [],
     }));
@@ -416,9 +422,7 @@ function ModelCard({ item, onSelect }) {
 }
 
 function ProductCard({ item, onSelect, isMobile, onViewDetails }) {
-  const sketch = item?.images?.sketch;
-  const real = item?.images?.real;
-  const cover = sketch || real;
+  const cover = item?.imageSrc || item?.imageLargeSrc;
 
   return (
     <button

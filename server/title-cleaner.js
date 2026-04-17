@@ -41,6 +41,10 @@ export function cleanProductTitle(title) {
     /\bBOCANEGRA\b/g,
     /\bMirafiori\b/gi,
     /\bSupermirafiori\b/gi,
+    /\bPanda\b/gi,      // Panda standalone
+    /\bPANDA\b/g,       // PANDA standalone
+    /\bMarbella\b/gi,   // Marbella standalone
+    /\bMARBELLA\b/g,    // MARBELLA standalone
     /\bSport\s+(?=-)/gi, // "Sport -" (antes de guión)
     /\bSPORT\s+(?=-)/g,  // "SPORT -" (antes de guión)
     /\bSport\b(?!\s+(-|Doble))/gi, // Sport pero no si va seguido de guión o "Doble"
@@ -83,17 +87,21 @@ export function cleanProductTitle(title) {
 
   // Paso 5: Limpiar conectores huérfanos y espacios múltiples
   cleaned = cleaned
-    // Remover "y" o "," o "/" al final
+    // Limpiar espacios múltiples primero
+    .replace(/\s+/g, ' ')
+    // Remover "y" o "," o "/" al final (incluyendo posibles espacios)
     .replace(/\s*[,\/y]\s*$/gi, '')
     // Remover "y" o "," al inicio
     .replace(/^\s*[,\/y]\s*/gi, '')
-    // Limpiar espacios múltiples
-    .replace(/\s+/g, ' ')
     // Limpiar guiones y paréntesis vacíos
     .replace(/\s*-\s*$/, '')
     .replace(/\(\s*\)/g, '')
-    // Trim
-    .trim();
+    // Limpiar comas antes de puntos
+    .replace(/\s*,\s*\./g, '.')
+    // Trim final
+    .trim()
+    // Remover conectores al final una vez más después del trim
+    .replace(/[,\/y]$/gi, '');
 
   // Paso 6: Validación - Si el título quedó muy corto, devolver el original
   if (cleaned.length < 10) {

@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "./static/css/main.0aaaa9a3.css",
-    "main.js": "./static/js/main.6e364c8d.js",
+    "main.js": "./static/js/main.ac7c086c.js",
+    "static/media/seat-1430-fu.png": "./static/media/seat-1430-fu.c2c45b921050444e25bd.png",
     "static/media/seat-133.png": "./static/media/seat-133.1e2f47ae3b63556dea88.png",
     "static/media/seat-124-biarbol.png": "./static/media/seat-124-biarbol.9f3a3e731d3451c849c1.png",
     "static/media/seat-850.png": "./static/media/seat-850.bd7330bc74aa17068a39.png",
@@ -15,6 +16,7 @@
     "static/media/seat-marbella.png": "./static/media/seat-marbella.b753d930892c62133472.png",
     "static/media/croquis-manguito-motor.png": "./static/media/croquis-manguito-motor.117ea6e22c6307f84957.png",
     "static/media/seat-131.png": "./static/media/seat-131.846c1b37baad8a8d9c39.png",
+    "static/media/seat-124-sport.png": "./static/media/seat-124-sport.b0f6ccfe8539f05bc1be.png",
     "static/media/seat-600.png": "./static/media/seat-600.19e97c37d44d30d3ea56.png",
     "static/media/seat-triste.png": "./static/media/seat-triste.6545e4dc3a6d032c9995.png",
     "static/media/radiador-aluminio-02.png": "./static/media/radiador-aluminio-02.d2fb5c79e6d44256097b.png",
@@ -24,10 +26,10 @@
     "static/media/Apercu-Regular.otf": "./static/media/Apercu-Regular.83b693d3141cb9dd1538.otf",
     "index.html": "./index.html",
     "main.0aaaa9a3.css.map": "./static/css/main.0aaaa9a3.css.map",
-    "main.6e364c8d.js.map": "./static/js/main.6e364c8d.js.map"
+    "main.ac7c086c.js.map": "./static/js/main.ac7c086c.js.map"
   },
   "entrypoints": [
     "static/css/main.0aaaa9a3.css",
-    "static/js/main.6e364c8d.js"
+    "static/js/main.ac7c086c.js"
   ]
 }

@@ -410,7 +410,8 @@ export function clearProductVehicles(productId) {
 }
 
 /**
- * Obtiene todos los vehículos únicos
+ * Obtiene todos los vehículos únicos que tienen productos válidos
+ * Filtra vehículos mal formateados (sin modelo o con modelo = marca)
  */
 export function getAllVehicles() {
   const stmt = db.prepare(`
@@ -419,6 +420,9 @@ export function getAllVehicles() {
     INNER JOIN product_vehicles pv ON v.id = pv.vehicle_id
     INNER JOIN products p ON pv.product_id = p.id
     WHERE p.category IN ('manguito', 'radiador')
+      AND v.model != ''
+      AND v.model IS NOT NULL
+      AND v.model != v.brand
     ORDER BY v.brand, v.model
   `);
   return stmt.all();
