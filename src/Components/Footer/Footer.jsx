@@ -73,23 +73,6 @@ function IconRotate({ size = 18, color = "currentColor" }) {
   );
 }
 
-function IconExternalArrow({ size = 18, color = "currentColor" }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="7" y1="17" x2="17" y2="7" />
-      <polyline points="7 7 17 7 17 17" />
-    </svg>
-  );
-}
 
 export default function LeggoxFooter({
   mercaUrl = "https://mercagarage.com/",
@@ -145,37 +128,6 @@ export default function LeggoxFooter({
                 <span>Devoluciones</span>
               </a>
             </nav>
-          </div>
-
-          {/* Comprar */}
-          <div style={styles.ctaBlock}>
-            <h3 style={styles.linksTitle}>Comprar</h3>
-            <p style={styles.buyNote}>
-              Todos los productos se compran en{" "}
-              <strong style={styles.strong}>Mercagarage</strong>
-            </p>
-            <a
-              href={mercaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                ...styles.ctaButton,
-                ...(isMobile && styles.ctaButtonMobile),
-              }}
-              aria-label="Ir a Mercagarage (se abre en una pestaña nueva)"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 6px 16px rgba(224,30,55,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              <span>Ir a Mercagarage</span>
-              <IconExternalArrow size={18} color="#FFFFFF" />
-            </a>
           </div>
         </div>
 

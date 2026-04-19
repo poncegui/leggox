@@ -1,14 +1,16 @@
 import '../App.css';
 
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import PromoModule from '../Components/PromoModule';
 import FeaturedKits from '../Components/FeaturedKits';
 import Footer from '../Components/Footer/Footer';
 import HeaderSection from '../Components/HeadingSection/HeaderSection';
 import BuscadorPiezas from '../Components/BuscadorPiezas';
-import ProductShowcase from '../Components/ProductShowcase';
-import ScrollStepper from '../Components/ScrollStepper';
+import ProductGallery from '../Components/ProductGallery';
+import TopBar from '../Components/TopBar';
+import StaticHeader from '../Components/StaticHeader';
 import mercagarageLogo from '../Assets/images/mercagarage-logo.jpg';
 // import PitlaneRunner from "../Components/PitlaneRunner"; // Movido a vista separada
 
@@ -81,52 +83,29 @@ const SECTION_BACKGROUNDS = {
 };
 
 function App() {
-  const [setIsConfigCompleted] = useState(false);
-  const [currentSection, setCurrentSection] = useState(0);
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
-  const totalSections = 6;
-
-  // Detectar mobile
+  // Restaurar posición del scroll cuando volvemos del detalle del producto
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Tracking de scroll para vista vertical
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!hasScrolled) {
-        setHasScrolled(true);
-        document.documentElement.style.scrollSnapType = 'y proximity';
-      }
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const section = Math.round(scrollPosition / windowHeight);
-      setCurrentSection(Math.min(section, totalSections - 1));
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [totalSections, hasScrolled]);
-
-  const sectionNames = [
-    'Inicio',
-    'Ofertas',
-    'Manguitos y radiadores',
-    'Búsqueda por vehículo',
-    'Leggox Race',
-    'Contacto',
-  ];
+    if (location.state?.scrollTo !== undefined) {
+      // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+      setTimeout(() => {
+        window.scrollTo({
+          top: location.state.scrollTo,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }, [location]);
 
   return (
     <>
+      {/* Header estático siempre visible */}
+      <StaticHeader />
+
+      {/* TopBar con scroll */}
+      <TopBar />
+
       {/* Secciones */}
       <div
         style={{
@@ -159,23 +138,25 @@ function App() {
       </section> */}
 
       <section
+        id="catalogo"
         style={{
           minHeight: '100vh',
           scrollSnapAlign: 'start',
           backgroundColor: SECTION_BACKGROUNDS[1],
         }}
       >
-        <ProductShowcase />
+        <ProductGallery />
       </section>
 
       <section
+        id="buscador"
         style={{
           minHeight: '100vh',
           scrollSnapAlign: 'start',
-          backgroundColor: SECTION_BACKGROUNDS[4],
+          backgroundColor: SECTION_BACKGROUNDS[1],
         }}
       >
-        <BuscadorPiezas onComplete={() => setIsConfigCompleted(true)} />
+        <BuscadorPiezas />
       </section>
 
       {/* Footer */}
@@ -317,14 +298,6 @@ function App() {
         </div>
       </section>
 
-      {/* Indicador de carretera con coche - Solo desktop */}
-      {!isMobile && (
-        <ScrollStepper
-          currentSection={currentSection}
-          totalSections={totalSections}
-          sectionNames={sectionNames}
-        />
-      )}
     </>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import PayPalCheckout from './PayPalCheckout';
 import seatTristeImg from '../Assets/seat-triste.png';
 import { resolveImageUrl } from '../utils/imageUtils';
@@ -57,6 +58,7 @@ export default function ShoppingCart() {
     setIsCartOpen,
     clearCart,
   } = useCart();
+  const { user, isAuthenticated } = useAuth();
   const [paymentMethod, setPaymentMethod] = React.useState('card'); // 'card' | 'transfer' | 'paypal' | 'aplazame'
   const [showPaymentMethods, setShowPaymentMethods] = React.useState(false);
   const [shippingMethod, setShippingMethod] = React.useState('pickup'); // 'pickup' | 'delivery'
@@ -100,6 +102,32 @@ export default function ShoppingCart() {
       document.body.style.overflow = 'auto';
     };
   }, [showPaymentMethods, showShippingMethods, showShippingForm]);
+
+  // Auto-completar formulario si el usuario está autenticado
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      setBillingData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        city: user.city || '',
+        postalCode: user.postalCode || '',
+        country: user.country || 'Spain',
+      });
+      setShippingData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        city: user.city || '',
+        postalCode: user.postalCode || '',
+        country: user.country || 'Spain',
+      });
+    }
+  }, [isAuthenticated, user]);
 
   const handleBillingChange = e => {
     const { name, value } = e.target;

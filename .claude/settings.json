@@ -155,7 +155,18 @@
       "Bash(sqlite3 server/leggox.db \"SELECT id, reference, title, image_url FROM products WHERE reference IN \\('MNG-1430-SUP', 'MNG-1430-ENT', 'MNG-124-GAS'\\) OR title LIKE '%RANCHERA%' AND title LIKE '%Llenado%'\")",
       "Bash(curl -I \"http://localhost:4000/images/manguitos/manguito-silicona-radiador-superior-1430-potenciado.jpg\")",
       "Bash(curl -I \"http://localhost:4000/images/manguitos/manguito-entrada-agua-calefactor-seat-1430-1600.jpg\")",
-      "Bash(curl -I \"http://localhost:4000/images/manguitos/manguito-gases-seat-1241430-biarbol-doble-medida.jpg\")"
+      "Bash(curl -I \"http://localhost:4000/images/manguitos/manguito-gases-seat-1241430-biarbol-doble-medida.jpg\")",
+      "Bash(curl -s http://localhost:4000/api/products/1767/images)",
+      "Bash(curl -s http://localhost:4000/api/products/1767)",
+      "Bash(curl -I \"https://mercagarage.com/1767-thickbox_default/kit-manguitos-silicona-seat-600.jpg\")",
+      "Bash(curl -I \"https://mercagarage.com/1768-home_default/manguito-silicona-llenado-seat-124-1430.jpg\")",
+      "Bash(node /tmp/fix-ranchera.js)",
+      "Bash(node fix-ranchera-image.js)",
+      "Bash(node fix-ranchera-image.cjs)",
+      "Bash(lsof -ti:3001)",
+      "Bash(curl -X POST http://localhost:4000/api/auth/register -H 'Content-Type: application/json' -d '{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"test@example.com\",\"password\":\"password123\"}' -s)",
+      "Bash(curl -X POST http://localhost:4000/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"password123\"}' -s)",
+      "Bash(curl -X GET http://localhost:4000/api/auth/me -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsImlhdCI6MTc3NjU4NTU0MywiZXhwIjoxNzc3MTkwMzQzfQ.qHLmKOIsiRHADIVxZA1tFp_MwcsoVBqM5XXm7hg8G5s' -s)"
     ],
     "additionalDirectories": [
       "/private/tmp"

@@ -23,16 +23,14 @@ import seatRanchera from '../Assets/images/coches/seat-ranchera.png';
 import otros from '../Assets/images/coches/otros.png';
 
 const COLORS = {
-  bg: '#FFFFFF',
-  ink: '#000000',
-  ink70: 'rgba(0,0,0,0.70)',
-  ink40: 'rgba(0,0,0,0.40)',
-  ink20: 'rgba(0,0,0,0.20)',
-  ink10: 'rgba(0,0,0,0.10)',
-  panel: 'rgba(224,30,55,0.08)',
+  bg: '#000000',
+  ink: '#FFFFFF',
+  ink70: 'rgba(255,255,255,0.70)',
+  ink40: 'rgba(255,255,255,0.40)',
+  ink20: 'rgba(255,255,255,0.20)',
+  ink10: 'rgba(255,255,255,0.10)',
+  panel: 'rgba(224,30,55,0.12)',
   red: '#E01E37',
-  lightGray: '#F5F5F5',
-  border: '#E5E5E5',
 };
 
 const COLLECTION_NAME = 'CATÁLOGO LEGGOX';
@@ -334,7 +332,6 @@ function TabButton({ active, label, onPress, count }) {
 /** Modelo card: SOLO selecciona (sin links) */
 function ModelCard({ item, onSelect }) {
   const sketch = item?.images?.sketch;
-  const [isHovered, setIsHovered] = React.useState(false);
 
   return (
     <article
@@ -342,18 +339,13 @@ function ModelCard({ item, onSelect }) {
       style={{
         borderRadius: 16,
         overflow: 'hidden',
-        border: `2px solid ${isHovered ? COLORS.red : COLORS.border}`,
-        background: '#FFFFFF',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
-        boxShadow: isHovered ? '0 12px 28px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+        border: '1px solid rgba(0,0,0,0.12)',
+        background: 'rgba(255,255,255,0.6)',
       }}
     >
       <button
         type="button"
         onClick={() => onSelect(item)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         aria-label={`Seleccionar modelo ${item.title}`}
         style={{
           width: '100%',
@@ -404,36 +396,25 @@ function ModelCard({ item, onSelect }) {
 
         <div
           style={{
-            padding: 16,
+            padding: 12,
             display: 'flex',
             flexDirection: 'column',
-            gap: 8,
-            backgroundColor: COLORS.white,
+            gap: 10,
           }}
         >
           <h3
             style={{
               margin: 0,
-              fontSize: 17,
-              lineHeight: 1.3,
+              fontSize: 16,
+              lineHeight: 1.2,
               letterSpacing: '-0.01em',
               fontFamily: 'APERCU, sans-serif',
-              fontWeight: 800,
-              color: COLORS.ink,
+              fontWeight: 700,
+              color: '#000',
             }}
           >
             {item.title}
           </h3>
-          <p
-            style={{
-              margin: 0,
-              fontSize: 13,
-              color: COLORS.ink70,
-              fontFamily: 'APERCU, sans-serif',
-            }}
-          >
-            {item.subtitle}
-          </p>
         </div>
       </button>
     </article>
@@ -442,18 +423,10 @@ function ModelCard({ item, onSelect }) {
 
 function ProductCard({ item, onSelect, isMobile, onViewDetails }) {
   const cover = item?.imageSrc || item?.imageLargeSrc;
-  const [isHovered, setIsHovered] = React.useState(false);
-
-  // Parsear technical si existe
-  let technical = {};
-  try {
-    technical = typeof item.technical === 'string' ? JSON.parse(item.technical) : item.technical || {};
-  } catch (e) {
-    technical = {};
-  }
 
   return (
-    <article
+    <button
+      type="button"
       onClick={() => {
         if (onViewDetails) {
           onViewDetails(item);
@@ -461,31 +434,18 @@ function ProductCard({ item, onSelect, isMobile, onViewDetails }) {
           onSelect(item);
         }
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         ...styles.card,
-        padding: 0,
-        overflow: 'hidden',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
-        boxShadow: isHovered ? '0 12px 28px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
-        borderColor: isHovered ? COLORS.red : COLORS.border,
+        padding: isMobile ? 12 : 14,
       }}
       aria-label={`Abrir ficha de ${item.title}`}
     >
-      <Row style={{ gap: 0, alignItems: 'stretch' }}>
-        {/* Imagen más grande */}
+      <Row style={{ gap: 12, alignItems: 'center' }}>
         <div
           style={{
-            width: isMobile ? 120 : 180,
-            flexShrink: 0,
-            backgroundColor: COLORS.lightGray,
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 12,
+            ...styles.thumb,
+            width: isMobile ? 64 : 72,
+            height: isMobile ? 64 : 72,
           }}
           aria-hidden="true"
         >
@@ -493,163 +453,47 @@ function ProductCard({ item, onSelect, isMobile, onViewDetails }) {
             <img
               src={cover}
               alt=""
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                maxHeight: isMobile ? 100 : 150,
-              }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
-            <div style={{ fontSize: 48, color: COLORS.ink20 }}>📦</div>
-          )}
-
-          {/* Badges */}
-          {!item.inStock && (
-            <div style={{
-              position: 'absolute',
-              top: 8,
-              left: 8,
-              backgroundColor: '#EF4444',
-              color: '#FFFFFF',
-              padding: '4px 8px',
-              borderRadius: 12,
-              fontSize: 10,
-              fontWeight: 800,
-              fontFamily: 'ui-monospace, monospace',
-              letterSpacing: '0.5px',
-            }}>
-              AGOTADO
-            </div>
-          )}
-
-          {item.onSale && item.inStock && (
-            <div style={{
-              position: 'absolute',
-              top: 8,
-              left: 8,
-              backgroundColor: COLORS.red,
-              color: '#FFFFFF',
-              padding: '4px 8px',
-              borderRadius: 12,
-              fontSize: 10,
-              fontWeight: 800,
-              fontFamily: 'ui-monospace, monospace',
-              letterSpacing: '0.5px',
-            }}>
-              OFERTA
-            </div>
+            <div style={{ ...styles.thumbFallback }}>IMG</div>
           )}
         </div>
 
-        <Column style={{ flex: 1, minWidth: 0, gap: 8, padding: isMobile ? 12 : 16 }}>
-          {/* Categoría */}
-          <Mono style={{
-            fontSize: 10,
-            color: COLORS.red,
-            fontWeight: 800,
-            letterSpacing: '1.5px',
-          }}>
-            {item.type?.toUpperCase() || 'PRODUCTO'}
-          </Mono>
-
-          {/* Título */}
+        <Column style={{ flex: 1, minWidth: 0, gap: 4 }}>
           <Text
             style={{
-              fontSize: isMobile ? 15 : 17,
+              fontSize: isMobile ? 15 : 16,
               fontWeight: 800,
-              color: COLORS.ink,
-              lineHeight: 1.3,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
+              color: '#000000',
             }}
           >
             {item.title}
           </Text>
-
-          {/* Subtítulo */}
-          {item.subtitle && (
-            <Text
-              style={{
-                fontSize: 13,
-                color: COLORS.ink70,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {item.subtitle}
-            </Text>
-          )}
-
-          {/* Info técnica compacta */}
-          {(technical.material || technical.color) && (
-            <div style={{
-              fontSize: 11,
-              color: COLORS.ink40,
-              fontFamily: 'ui-monospace, monospace',
-              display: 'flex',
-              gap: 12,
-              flexWrap: 'wrap',
-            }}>
-              {technical.material && <span>Material: {technical.material}</span>}
-              {technical.color && <span>Color: {technical.color}</span>}
-            </div>
-          )}
-
-          <div style={{ marginTop: 'auto', paddingTop: 8 }}>
-            {/* Precio */}
-            {item.price && (
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-                <Text style={{
-                  fontSize: isMobile ? 20 : 24,
-                  fontWeight: 900,
-                  color: COLORS.red,
-                  fontFamily: 'APERCU, sans-serif',
-                }}>
-                  {item.price.toFixed(2)} €
-                </Text>
-                {item.oldPrice && (
-                  <Text style={{
-                    fontSize: 14,
-                    color: COLORS.ink40,
-                    textDecoration: 'line-through',
-                  }}>
-                    {item.oldPrice.toFixed(2)} €
-                  </Text>
-                )}
-              </div>
-            )}
-
-            {/* Referencia */}
-            {item.reference && (
-              <Mono style={{ fontSize: 10, color: COLORS.ink40 }}>
-                REF: {item.reference}
-              </Mono>
-            )}
-          </div>
+          <Text
+            style={{
+              fontSize: 12,
+              color: '#666666',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {item.subtitle || '—'}
+          </Text>
+          <Mono style={{ fontSize: 11, color: '#999999' }}>
+            {item.sku ? `SKU ${item.sku}` : item.type?.toUpperCase()}
+          </Mono>
         </Column>
 
-        {/* Chevron */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0 16px',
-            color: COLORS.red,
-            fontSize: 24,
-            fontWeight: 'bold',
-            transition: 'transform 0.2s',
-            transform: isHovered ? 'translateX(4px)' : 'translateX(0)',
-          }}
+          style={{ ...styles.chev, color: '#000000', borderColor: '#CCCCCC' }}
           aria-hidden="true"
         >
           →
         </div>
       </Row>
-    </article>
+    </button>
   );
 }
 
@@ -1396,11 +1240,10 @@ const styles = {
     minHeight: '100vh',
     backgroundColor: COLORS.bg,
     color: COLORS.ink,
-    padding: '40px 0',
   },
   container: {
     width: '100%',
-    maxWidth: 1400,
+    maxWidth: 1120,
     margin: '0 auto',
     padding: 20,
   },
@@ -1425,9 +1268,8 @@ const styles = {
   },
   main: {
     borderRadius: 22,
-    border: `1px solid ${COLORS.border}`,
-    backgroundColor: COLORS.lightGray,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    border: '1px solid rgba(0,0,0,0.12)',
+    backgroundColor: '#FFFFFF',
   },
   hr: {
     height: 1,
@@ -1465,21 +1307,18 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    borderRadius: 25,
-    border: `2px solid ${COLORS.border}`,
-    backgroundColor: '#FFFFFF',
-    color: COLORS.ink,
-    padding: '12px 20px',
+    borderRadius: 999,
+    border: '1px solid rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.04)',
+    color: '#000000',
+    padding: '10px 12px',
     cursor: 'pointer',
-    fontWeight: 800,
-    fontFamily: 'APERCU, sans-serif',
-    fontSize: 14,
-    transition: 'all 0.2s',
+    fontWeight: 900,
   },
   tabActive: {
-    backgroundColor: COLORS.black,
+    backgroundColor: '#000000',
     color: '#FFFFFF',
-    border: `2px solid ${COLORS.black}`,
+    border: '1px solid #000000',
   },
   tabCount: {
     fontSize: 12,
@@ -1491,11 +1330,10 @@ const styles = {
   card: {
     width: '100%',
     textAlign: 'left',
-    borderRadius: 16,
-    border: `1px solid ${COLORS.border}`,
+    borderRadius: 18,
+    border: `1px solid ${COLORS.ink20}`,
     backgroundColor: '#FFFFFF',
     cursor: 'pointer',
-    overflow: 'hidden',
   },
   thumb: {
     borderRadius: 14,

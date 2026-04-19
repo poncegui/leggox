@@ -24,6 +24,13 @@ import {
   transformOrderToFrontend,
   transformOrdersToFrontend,
 } from "./transformers.js";
+import {
+  registerUser,
+  loginUser,
+  getUserById,
+  updateUserProfile,
+  authMiddleware,
+} from "./auth.js";
 
 dotenv.config();
 
@@ -632,6 +639,139 @@ app.post("/api/mercagarage/prices", async (req, res) => {
     return res.status(500).json({ error: e.message || "Server error" });
   }
 });
+
+// ========================================
+// 🔐 ENDPOINTS DE AUTENTICACIÓN
+// ========================================
+
+/**
+ * POST /api/auth/register
+ * Registrar un nuevo usuario
+ */
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+
+    // Validaciones
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        message: "Todos los campos son obligatorios",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "La contraseña debe tener al menos 6 caracteres",
+      });
+    }
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Email inválido",
+      });
+    }
+
+    const result = await registerUser({
+      firstName,
+      lastName,
+      email: email.toLowerCase(),
+      password,
+    });
+
+    return res.status(201).json({
+      message: "Usuario registrado exitosamente",
+      user: result.user,
+      token: result.token,
+    });
+  } catch (error) {
+    console.error("Error en registro:", error);
+
+    if (error.message.includes("ya está registrado")) {
+      return res.status(409).json({ message: error.message });
+    }
+
+    return res.status(500).json({
+      message: "Error al registrar usuario",
+    });
+  }
+});
+
+/**
+ * POST /api/auth/login
+ * Iniciar sesión
+ */
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email y contraseña son obligatorios",
+      });
+    }
+
+    const result = await loginUser(email.toLowerCase(), password);
+
+    return res.json({
+      message: "Login exitoso",
+      user: result.user,
+      token: result.token,
+    });
+  } catch (error) {
+    console.error("Error en login:", error);
+
+    if (error.message.includes("incorrectos")) {
+      return res.status(401).json({ message: error.message });
+    }
+
+    return res.status(500).json({
+      message: "Error al iniciar sesión",
+    });
+  }
+});
+
+/**
+ * GET /api/auth/me
+ * Obtener información del usuario autenticado
+ */
+app.get("/api/auth/me", authMiddleware, async (req, res) => {
+  try {
+    const user = getUserById(req.user.userId);
+    return res.json({ user });
+  } catch (error) {
+    console.error("Error obteniendo usuario:", error);
+    return res.status(500).json({
+      message: "Error al obtener información del usuario",
+    });
+  }
+});
+
+/**
+ * PUT /api/auth/profile
+ * Actualizar perfil del usuario
+ */
+app.put("/api/auth/profile", authMiddleware, async (req, res) => {
+  try {
+    const updates = req.body;
+    const user = updateUserProfile(req.user.userId, updates);
+
+    return res.json({
+      message: "Perfil actualizado exitosamente",
+      user,
+    });
+  } catch (error) {
+    console.error("Error actualizando perfil:", error);
+    return res.status(500).json({
+      message: "Error al actualizar perfil",
+    });
+  }
+});
+
+// ========================================
+// 🏥 HEALTH CHECK
+// ========================================
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 

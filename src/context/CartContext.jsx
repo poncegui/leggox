@@ -22,6 +22,8 @@ export function CartProvider({ children }) {
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+  const [lastAddedProduct, setLastAddedProduct] = useState(null);
 
   // Guardar en localStorage cuando cambia
   useEffect(() => {
@@ -49,6 +51,10 @@ export function CartProvider({ children }) {
       // Agregar nuevo
       return [...prev, { ...product, quantity }];
     });
+
+    // Mostrar modal de confirmación
+    setLastAddedProduct(product);
+    setIsAddToCartModalOpen(true);
   };
 
   const removeFromCart = (productId) => {
@@ -90,6 +96,9 @@ export function CartProvider({ children }) {
     getItemCount,
     isCartOpen,
     setIsCartOpen,
+    isAddToCartModalOpen,
+    setIsAddToCartModalOpen,
+    lastAddedProduct,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
